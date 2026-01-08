@@ -2,6 +2,7 @@
 #include "Novice.h"
 #include "Map.h"
 #include "const.h"
+
 Player::Player() {
 	InitPlayer();
 }
