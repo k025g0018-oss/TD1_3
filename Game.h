@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Vector2.h"
+#include "ScrollCamera.h"
 
 struct GameScreen {
 	Vector2 position;
@@ -22,10 +23,13 @@ public:
 	GameScreen gameScreen;
 	CommandScreen commandScreen;
 
+	ScrollCamera* scrollCamera;
+
 	// ゲームシーン
 
 
 	// 更新
+	void Update();
 
 	// 描画
 	void Draw();
