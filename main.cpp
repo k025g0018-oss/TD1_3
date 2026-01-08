@@ -1,11 +1,13 @@
 ﻿#include <Novice.h>
 #define _USE_MATH_DEFINES
 #include <assert.h>
+#include "Map.h"
 #include <math.h>
 
 #include "Vector2.h"
 #include "Game.h"
 
+// (^▽^)/あ
 // (^▽^)/あ
 
 
@@ -18,10 +20,11 @@ const char kWindowTitle[] = "TD1_3";
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
+	
+
 	//////////
 	/// 変数の宣言
 	//////////
-
 	// 画面
 	Vector2 screenSize;
 	screenSize.x = 1980.0f;
@@ -36,12 +39,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// スクリーンモード
 	bool screenMode = false;
+  
+	Map* map = new Map();
+
+	map->LoadMapFromLDtk("./mapTest9999.ldtk");
+	int textureBlock = Novice::LoadTexture("./block.png");
+
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
 		Novice::BeginFrame();
-
+		Novice::SetWindowMode(kFullscreen);
 		// キー入力を受け取る
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
@@ -82,6 +91,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// 自機
 		//////////
 
+		map->Draw(textureBlock);
+
 		//////////
 		/// デバッグ処理
 		//////////
@@ -89,6 +100,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		Novice::ScreenPrintf(0, 0, "Hello, Novice!");
 		//
 		Novice::ScreenPrintf(0, 50, "pikachyuuuuu");
+
+
 
 		///
 		/// ↑描画処理ここまで
@@ -102,6 +115,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			break;
 		}
 	}
+
+	delete map;
 
 	// ライブラリの終了
 	Novice::Finalize();
