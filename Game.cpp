@@ -31,6 +31,7 @@ void Game::Draw() {
 		kFillModeSolid
 	);
 
+
 	// コマンド画面
 	Novice::DrawBox(
 		static_cast<int>(commandScreen.position.x),
