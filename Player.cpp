@@ -2,7 +2,6 @@
 #include "Novice.h"
 #include "Map.h"
 #include "const.h"
-#include"MapCollision.h"
 Player::Player() {
 	InitPlayer();
 }
@@ -73,9 +72,9 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
     float leftX = status_.pos.x + 2;
     float rightX = status_.pos.x + status_.width - 2;
 
-    int tileY = (int)(footY / tileSize);
-    int tileLeftX = (int)(leftX / tileSize);
-    int tileRightX = (int)(rightX / tileSize);
+    int tileY = (int)(footY / kTileSize);
+    int tileLeftX = (int)(leftX / kTileSize);
+    int tileRightX = (int)(rightX / kTileSize);
 
     // 配列範囲チェック
     if (tileY >= 0 && tileY < kMapHeight &&
@@ -86,7 +85,7 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
             mapData[tileY][tileRightX] != 0) {
 
             // 地面の上に補正
-            status_.pos.y = tileY * tileSize - status_.height;
+            status_.pos.y = tileY * kTileSize - status_.height;
             status_.Velocity.y = 0.0f;
             status_.isJumop = false;
         }
