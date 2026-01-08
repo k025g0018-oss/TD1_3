@@ -7,6 +7,7 @@
 #include "Vector2.h"
 
 // (^▽^)/あ
+// (^▽^)/あ
 
 
 const char kWindowTitle[] = "TD1_3";
