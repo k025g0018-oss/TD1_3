@@ -69,28 +69,73 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
     status_.pos.y += status_.Velocity.y;
 
     // ===== 床当たり判定 =====
-    float footY = status_.pos.y + status_.height;
-    float leftX = status_.pos.x + 2;
-    float rightX = status_.pos.x + status_.width - 2;
+    float footY = status_.pos.y + status_.height-0.5f;
+    float leftX = status_.pos.x ;
+    float rightX = status_.pos.x + status_.width;
+    float topY = status_.pos.y;
 
-    int tileY = (int)(footY / kTileSize);
+    int tileBottomY = (int)(footY / kTileSize);
     int tileLeftX = (int)(leftX / kTileSize);
     int tileRightX = (int)(rightX / kTileSize);
+    int tileTopY = (int)(topY / kTileSize);
 
+
+    //下のタイルの座標系さんと当たり判定
+#pragma region 下のタイルの当たり判定と補正
     // 配列範囲チェック
-    if (tileY >= 0 && tileY < kMapHeight &&
+    if (tileBottomY >= 0 && tileBottomY < kMapHeight &&
         tileLeftX >= 0 && tileRightX < kMapWidth) {
 
         // 足元にブロックがあるか？
-        if (mapData[tileY][tileLeftX] != 0 ||
-            mapData[tileY][tileRightX] != 0) {
+        if (mapData[tileBottomY][tileLeftX] != 0 ||
+            mapData[tileBottomY][tileRightX] != 0) {
 
             // 地面の上に補正
-            status_.pos.y = tileY * kTileSize - status_.height;
+            status_.pos.y = tileBottomY * kTileSize - status_.height;
             status_.Velocity.y = 0.0f;
             status_.isJumop = false;
         }
     }
+
+#pragma endregion
+    
+    //右のタイルの座標系さんと当たり判定
+#pragma region 右のタイルの当たり判定と補正
+    // 配列範囲チェック
+    if (tileBottomY >= 0 && tileBottomY < kMapHeight &&
+        tileLeftX >= 0 && tileRightX < kMapWidth) {
+
+        // 足元にブロックがあるか？
+        if (mapData[tileTopY][tileRightX] != 0 ||
+            mapData[tileBottomY][tileRightX] != 0) {
+
+            int rightIndex = (int)(status_.pos.x / kTileSize);
+            float left = (float)(rightIndex + 1) * kTileSize;
+
+            status_.pos.x = left - status_.radius + 0.01f;
+        }
+    }
+
+#pragma endregion
+
+#pragma region 左のタイルの当たり判定と補正
+    // 配列範囲チェック
+    if (tileBottomY >= 0 && tileBottomY < kMapHeight &&
+        tileLeftX >= 0 && tileRightX < kMapWidth) {
+
+        // 足元にブロックがあるか？
+        if (mapData[tileTopY][tileLeftX] != 0 ||
+            mapData[tileBottomY][tileLeftX] != 0) {
+
+            int leftIndex = (int)(status_.pos.x / kTileSize);
+            float right = (float)leftIndex * kTileSize;
+            // 地面の上に補正
+            status_.pos.x = right + status_.radius;
+        }
+    }
+
+#pragma endregion
+
 }
 
 void Player::Gravity() {
