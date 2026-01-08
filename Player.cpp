@@ -82,7 +82,8 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 				// このブロックの役目は終わったので次へ進む
 				// （これで「一回だけ」が実現できます）
 				cmdIndex++;
-			} else {
+			}
+			else {
 				// 壁がない -> まだこのブロックにとどまる
 				// cmdIndex を増やさないことで、次のフレームもこのチェックを行います。
 			}
@@ -101,43 +102,70 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 			}
 			break;
 		}
-	} else {
+	}
+	else {
 		// コマンドリストが全部終わった後の挙動
 		// 例：そのまま右に進み続けるなら
 		status_.pos.x += status_.Speed;
 	}
 
-	// 物理演算（重力）
-	// 物理演算があるならここで
-	 // 重力
-	status_.Velocity.y += 0.38f;
-	status_.pos.y += status_.Velocity.y;
+	// 左右の当たり判定と補正
+	float leftX = status_.pos.x;
+	float rightX = status_.pos.x + status_.width;
+	float topY = status_.pos.y;
+	float bottomY = status_.pos.y + status_.height;
 
-	// ===== 床当たり判定 =====
-	float footY = status_.pos.y + status_.height;
-	float leftX = status_.pos.x + 2;
-	float rightX = status_.pos.x + status_.width - 2;
-
-	int tileY = (int)(footY / kTileSize);
 	int tileLeftX = (int)(leftX / kTileSize);
-	int tileRightX = (int)(rightX / kTileSize);
+	int tileRightX = (int)((rightX - 0.1f) / kTileSize); // 0.1f引いて右端ギリギリを判定
+	int tileTopY = (int)(topY / kTileSize);
+	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
 
-	// 配列範囲チェック
-	if (tileY >= 0 && tileY < kMapHeight &&
-		tileLeftX >= 0 && tileRightX < kMapWidth) {
 
-		// 足元にブロックがあるか？
-		if (mapData[tileY][tileLeftX] != 0 ||
-			mapData[tileY][tileRightX] != 0) {
+#pragma region 右のタイルの当たり判定と補正]
 
-			// 地面の上に補正
-			status_.pos.y = tileY * kTileSize - status_.height;
+	// 右壁の判定
+	// 右壁の判定
+		// 右上の点か右下の点が壁なら
+	if (mapData[tileTopY][tileRightX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
+		status_.pos.x = (float)(tileRightX * kTileSize) - status_.width;
+	}
+	// 左上の点か左下の点が壁なら
+	if (mapData[tileTopY][tileLeftX] != 0 || mapData[tileBottomY][tileLeftX] != 0) {
+		status_.pos.x = (float)(tileLeftX + 1) * kTileSize;
+	}
+
+
+#pragma endregion
+
+	Gravity();//重力処理
+
+	//下のタイルの座標系さんと当たり判定
+#pragma region 下のタイルの当たり判定と補正
+// 上下の当たり判定と補正（最新のX座標を使って再計算）
+	leftX = status_.pos.x;
+	rightX = status_.pos.x + status_.width;
+	topY = status_.pos.y;
+	bottomY = status_.pos.y + status_.height;
+
+	tileLeftX = (int)(leftX / kTileSize);
+	tileRightX = (int)((rightX - 0.1f) / kTileSize);
+	tileTopY = (int)(topY / kTileSize);
+	tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
+
+	// 下方向（床）の判定
+	if (status_.Velocity.y > 0) {
+		if (mapData[tileBottomY][tileLeftX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
+			status_.pos.y = (float)(tileBottomY * kTileSize) - status_.height;
 			status_.Velocity.y = 0.0f;
 			status_.isJumop = false;
 		}
 	}
 
+	if (status_.pos.y >= 1080 - status_.height) {
+		status_.pos.y = 0;
+	}
 
+#pragma endregion
 }
 
 
@@ -166,7 +194,7 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
 			status_.Velocity.y = -status_.jumpPower;
 		}
 	}
-	
+
 
 	// --- 左右移動の処理 ---
 	if (keys[DIK_D]) {
