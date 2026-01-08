@@ -1,5 +1,7 @@
 ﻿#include "Game.h"
 #include <Novice.h>
+#include "Player.h"
+#include "ScrollCamera.h"
 
 // コンストラクタ
 Game::Game() {
@@ -17,6 +19,10 @@ Game::~Game() {
 }
 
 // 更新
+void Game::Update() {
+	// プレイヤーの座標をカメラに渡す
+
+}
 
 // 描画
 void Game::Draw() {

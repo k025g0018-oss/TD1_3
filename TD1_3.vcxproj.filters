@@ -56,6 +56,9 @@
     <Filter Include="KamataEngine\Source\Object\Enemy">
       <UniqueIdentifier>{fe39706e-0000-4f7b-bb91-366a7915339b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="KamataEngine\Source\ScrollCamera">
+      <UniqueIdentifier>{48f5ff4b-e04d-4f09-845f-179a0271b0c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -97,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>KamataEngine\Source\Object\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollCamera.cpp">
+      <Filter>KamataEngine\Source\ScrollCamera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +221,9 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>KamataEngine\Source\Object\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="ScrollCamera.h">
+      <Filter>KamataEngine\Source\ScrollCamera</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
