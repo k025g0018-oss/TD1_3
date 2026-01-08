@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <math.h>
 
+#include "Vector2.h"
+
 // (^▽^)/あ
 
 
@@ -11,11 +13,6 @@ const char kWindowTitle[] = "TD1_3";
 //////////
 /// 構造体
 //////////
-
-struct Vector2 {
-	float x;
-	float y;
-};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
