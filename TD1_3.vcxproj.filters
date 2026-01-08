@@ -17,8 +17,14 @@
     <Filter Include="KamataEngine\Source\Scene">
       <UniqueIdentifier>{fe955c77-918f-4b72-b6dd-0dd335afe516}</UniqueIdentifier>
     </Filter>
-    <Filter Include="KamataEngine\Source\Scene\SceneManager">
+    <Filter Include="KamataEngine\Source\SceneManager">
       <UniqueIdentifier>{677730df-f226-4af0-9672-13154f5c69c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="KamataEngine\Source\Scene\Game">
+      <UniqueIdentifier>{12ce2d71-b9c9-4759-9303-c76bb20fee18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="KamataEngine\Source\Scene\Clear">
+      <UniqueIdentifier>{54e4cc98-1aee-45b8-aedc-92e5b9886497}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,15 +45,9 @@
       <Filter>KamataEngine</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
-      <Filter>KamataEngine\Source\Scene\SceneManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Clear.cpp">
-      <Filter>KamataEngine\Source\Scene</Filter>
+      <Filter>KamataEngine\Source\SceneManager</Filter>
     </ClCompile>
     <ClCompile Include="Credit.cpp">
-      <Filter>KamataEngine\Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
       <Filter>KamataEngine\Source\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Setting.cpp">
@@ -58,6 +58,15 @@
     </ClCompile>
     <ClCompile Include="Title.cpp">
       <Filter>KamataEngine\Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>KamataEngine\Source\Scene\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Clear.cpp">
+      <Filter>KamataEngine\Source\Scene\Clear</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -148,15 +157,9 @@
     <ClInclude Include="const.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="SceneManager.h">
-      <Filter>KamataEngine\Source\Scene\SceneManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Clear.h">
-      <Filter>KamataEngine\Source\Scene</Filter>
+      <Filter>KamataEngine\Source\SceneManager</Filter>
     </ClInclude>
     <ClInclude Include="Credit.h">
-      <Filter>KamataEngine\Source\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
       <Filter>KamataEngine\Source\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Setting.h">
@@ -167,6 +170,13 @@
     </ClInclude>
     <ClInclude Include="Tutorial.h">
       <Filter>KamataEngine\Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h" />
+    <ClInclude Include="Game.h">
+      <Filter>KamataEngine\Source\Scene\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Clear.h">
+      <Filter>KamataEngine\Source\Scene\Clear</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
