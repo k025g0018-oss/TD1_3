@@ -14,6 +14,12 @@
     <Filter Include="KamataEngine\Adapter">
       <UniqueIdentifier>{c6468eb4-788b-4a83-b207-a5f4804e56c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="KamataEngine\Source\Scene">
+      <UniqueIdentifier>{fe955c77-918f-4b72-b6dd-0dd335afe516}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="KamataEngine\Source\Scene\SceneManager">
+      <UniqueIdentifier>{677730df-f226-4af0-9672-13154f5c69c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -28,6 +34,30 @@
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>KamataEngine\Source\Scene\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Clear.cpp">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Credit.cpp">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Setting.cpp">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial.cpp">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Title.cpp">
+      <Filter>KamataEngine\Source\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,5 +145,28 @@
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="const.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="SceneManager.h">
+      <Filter>KamataEngine\Source\Scene\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Clear.h">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Credit.h">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Setting.h">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Title.h">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Tutorial.h">
+      <Filter>KamataEngine\Source\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,11 +8,11 @@
 
 
 #include "Vector2.h"
+#include "SceneManager.h"
 #include "Game.h"
 
 // (^▽^)/あ
 // (^▽^)/あ
-
 
 const char kWindowTitle[] = "TD1_3";
 
@@ -43,6 +43,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	bool screenMode = false;
   
 	Player* player = new Player();
+	// ゲームシーンマネージャーを生成
+	SceneManager* sceneManager = new SceneManager();
+
 	Map* map = new Map();
 
 	player->InitPlayer();
@@ -62,6 +65,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 		/// ↓更新処理ここから
 		///
+
+		// ゲームシーンの管理
+		sceneManager->Run();
 
 		// スクリーン
 		if(keys[DIK_P]&& !preKeys[DIK_P]){
@@ -123,6 +129,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			break;
 		}
 	}
+
+	// 解放エクササイズ
+	delete sceneManager;
 
 	delete map;
 
