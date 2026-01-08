@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "Vector2.h"
 #include "const.h"
+#include "Command.h" 
+#include <vector>    
 class Player 
 {
 
@@ -32,13 +34,29 @@ public:
     Player();
     void InitPlayer();
     void UpdatePlayer(char keys[256], char preKeys[256], int  mapData[kMapHeight][kMapWidth]);
+    // コマンドで動かせる
+   void UpdateByCommands(const std::vector<CommandType>& commands, int mapData[kMapHeight][kMapWidth]);
     void DrawPlayer();
+
+    // 今どのコマンドを実行中か
+    int GetCurrentCommandIndex() const { return cmdIndex; }
 
 private:
 
     void MovePlayer(char keys[256], char preKeys[256], int  mapData[kMapHeight][kMapWidth]);
     void Gravity();
 
+    // コマンドの処理関数
+    // アクション関数
+    void ActionMoveRight();
+    void ActionTryJump();
+
+    // センサー関数
+    bool IsWallAhead(int mapData[kMapHeight][kMapWidth]);
+    bool IsCliffAhead(int mapData[kMapHeight][kMapWidth]);
+
+    // コマンド実行時のインデックス
+    int cmdIndex;
 
 };
 

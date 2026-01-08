@@ -8,6 +8,7 @@ SceneManager::SceneManager() {
     // シーンの実体を生成
     titleScene = new Title();
     gameScene = new Game();
+
 }
 
 // デストラクタ
@@ -33,7 +34,7 @@ void SceneManager::Run() {
             break;
 
         case Scene::GAME:
-            // gameScene->Update(); // まだUpdate関数を作っていない場合はコメントアウト
+            gameScene->Update(keys, preKeys);
             break;
     }
 
