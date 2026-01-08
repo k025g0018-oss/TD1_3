@@ -3,6 +3,9 @@
 #include <assert.h>
 #include <math.h>
 
+// (^▽^)/
+
+
 const char kWindowTitle[] = "TD1_3";
 
 //////////
