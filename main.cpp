@@ -1,4 +1,4 @@
-#include <Novice.h>
+﻿#include <Novice.h>
 #define _USE_MATH_DEFINES
 #include <assert.h>
 #include <math.h>
@@ -69,6 +69,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//////////
 		/// デバッグ処理
 		//////////
+
+		Novice::ScreenPrintf(0, 0, "Hello, Novice!");
 
 		///
 		/// ↑描画処理ここまで
