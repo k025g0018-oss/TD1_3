@@ -1,17 +1,17 @@
-#include "Game.h"
+ï»¿#include "Game.h"
 #include <Novice.h>
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 Game::Game() {
-	// ƒQ[ƒ€‰æ–Ê
+	// ã‚²ãƒ¼ãƒ ç”»é¢
 	gameScreen.position = {0.0f, 0.0f};
 	gameScreen.size = {1400.0f, 1080.0f};
-	// ƒRƒ}ƒ“ƒh‰æ–Ê
+	// ã‚³ãƒãƒ³ãƒ‰ç”»é¢
 	commandScreen.position = {1400.0f, 0.0f};
 	commandScreen.size = {580.0f, 1080.0f};
 }
 
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 Game::~Game() {
-	// “Á‚É‰ğ•ú‚·‚éƒŠƒ\[ƒX‚Í‚È‚¢
+	// ç‰¹ã«è§£æ”¾ã™ã‚‹ãƒªã‚½ãƒ¼ã‚¹ã¯ãªã„
 }
