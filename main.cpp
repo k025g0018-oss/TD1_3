@@ -20,11 +20,10 @@ const char kWindowTitle[] = "TD1_3";
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
-	
-
 	//////////
 	/// 変数の宣言
 	//////////
+	
 	// 画面
 	Vector2 screenSize;
 	screenSize.x = 1980.0f;
@@ -50,7 +49,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
 		Novice::BeginFrame();
-		Novice::SetWindowMode(kFullscreen);
+
 		// キー入力を受け取る
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
