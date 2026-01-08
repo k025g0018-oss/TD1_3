@@ -26,8 +26,8 @@ void SceneManager::Run() {
         case Scene::TITLE:
             titleScene->Update();
 
-            // スペースキーが押されたらGAMEシーンへ
-            if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+            // エンターキーが押されたらGAMEシーンへ
+            if (keys[DIK_RETURN] && !preKeys[DIK_RETURN]) {
                 currentScene = Scene::GAME;
             }
             break;
