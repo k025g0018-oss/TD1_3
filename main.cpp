@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "Vector2.h"
+#include "Game.h"
 
 // (^▽^)/あ
 
@@ -23,8 +24,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 画面
 	Vector2 screenSize;
-	screenSize.x = 1280.0f;
-	screenSize.y = 720.0f;
+	screenSize.x = 1980.0f;
+	screenSize.y = 1080.0f;
 
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, static_cast<int>(screenSize.x), static_cast<int>(screenSize.y));
@@ -32,6 +33,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
 	char preKeys[256] = {0};
+
+	// スクリーンモード
+	bool screenMode = false;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -45,6 +49,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		///
 		/// ↓更新処理ここから
 		///
+
+		// スクリーン
+		if(keys[DIK_P]&& !preKeys[DIK_P]){
+			screenMode = !screenMode;
+		}
+
+		if (screenMode) {
+			Novice::SetWindowMode(kFullscreen);
+		} else {
+			Novice::SetWindowMode(kWindowed);
+		}
+		
 
 		//////////
 		/// 自機
