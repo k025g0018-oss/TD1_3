@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Vector2.h"
-
+#include "const.h"
 class Player 
 {
 
@@ -19,19 +19,24 @@ public:
         Vector2 scale;//大きさ
         Vector2 dir;//プレイヤーの向き
         
+        float height;
+        float width;
+
         bool isActive;//生存フラグ
         float jumpPower;//ジャンプ力
         bool isJumop;//ジャンプフラグ
+        float radius;
     }status_;//status＿で宣言
+
 
     Player();
     void InitPlayer();
-    void UpdatePlayer(char keys[256], char preKeys[256]);
+    void UpdatePlayer(char keys[256], char preKeys[256], int  mapData[kMapHeight][kMapWidth]);
     void DrawPlayer();
 
 private:
 
-    void MovePlayer(char keys[256], char preKeys[256]);
+    void MovePlayer(char keys[256], char preKeys[256], int  mapData[kMapHeight][kMapWidth]);
     void Gravity();
 
 

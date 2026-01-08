@@ -15,3 +15,29 @@ Game::Game() {
 Game::~Game() {
 	// 特に解放するリソースはない
 }
+
+// 更新
+
+// 描画
+void Game::Draw() {
+	// ゲーム画面
+	Novice::DrawBox(
+		static_cast<int>(gameScreen.position.x),
+		static_cast<int>(gameScreen.position.y),
+		static_cast<int>(gameScreen.size.x),
+		static_cast<int>(gameScreen.size.y),
+		0.0f,
+		0x000000FF,
+		kFillModeSolid
+	);
+	// コマンド画面
+	Novice::DrawBox(
+		static_cast<int>(commandScreen.position.x),
+		static_cast<int>(commandScreen.position.y),
+		static_cast<int>(commandScreen.size.x),
+		static_cast<int>(commandScreen.size.y),
+		0.0f,
+		0x00FF00FF,
+		kFillModeSolid
+	);
+}

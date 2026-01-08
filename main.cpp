@@ -3,13 +3,16 @@
 #include <assert.h>
 #include "Map.h"
 #include <math.h>
+#include "Player.h"
+// (^▽^)/あ
+
 
 #include "Vector2.h"
+#include "SceneManager.h"
 #include "Game.h"
 
 // (^▽^)/あ
 // (^▽^)/あ
-
 
 const char kWindowTitle[] = "TD1_3";
 
@@ -39,8 +42,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// スクリーンモード
 	bool screenMode = false;
   
+	Player* player = new Player();
+	// ゲームシーンマネージャーを生成
+	SceneManager* sceneManager = new SceneManager();
+
 	Map* map = new Map();
 
+	player->InitPlayer();
 	map->LoadMapFromLDtk("./mapTest9999.ldtk");
 	int textureBlock = Novice::LoadTexture("./block.png");
 
@@ -58,6 +66,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓更新処理ここから
 		///
 
+		// ゲームシーンの管理
+		sceneManager->Run();
+
 		// スクリーン
 		if(keys[DIK_P]&& !preKeys[DIK_P]){
 			screenMode = !screenMode;
@@ -73,6 +84,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//////////
 		/// 自機
 		//////////
+
+		player->UpdatePlayer(keys, preKeys, map->mapData);
 
 		//////////
 		/// 座標変換
@@ -91,12 +104,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//////////
 
 		map->Draw(textureBlock);
-
+		player->DrawPlayer();
 		//////////
 		/// デバッグ処理
 		//////////
 
 		Novice::ScreenPrintf(0, 0, "Hello, Novice!");
+		//
+		Novice::ScreenPrintf(0, 50, "pikachyuuuuu");
 		//
 		Novice::ScreenPrintf(0, 50, "pikachyuuuuu");
 
@@ -114,6 +129,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			break;
 		}
 	}
+
+	// 解放エクササイズ
+	delete sceneManager;
 
 	delete map;
 
