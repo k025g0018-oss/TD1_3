@@ -4,6 +4,7 @@
 #include "Map.h"
 #include <math.h>
 #include "Player.h"
+#include "Game.h"
 // (^▽^)/あ
 
 
@@ -47,6 +48,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	SceneManager* sceneManager = new SceneManager();
 
 	Map* map = new Map();
+	//Game* game = new Game();
+
 
 	player->InitPlayer();
 	map->LoadMapFromLDtk("./mapTest9999.ldtk");
@@ -85,7 +88,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// 自機
 		//////////
 
-		player->UpdatePlayer(keys, preKeys, map->mapData);
+	
 
 		//////////
 		/// 座標変換
@@ -104,16 +107,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//////////
 
 		map->Draw(textureBlock);
-		player->DrawPlayer();
+	
+		
+		
 		//////////
 		/// デバッグ処理
 		//////////
 
-		Novice::ScreenPrintf(0, 0, "Hello, Novice!");
-		//
-		Novice::ScreenPrintf(0, 50, "pikachyuuuuu");
-		//
-		Novice::ScreenPrintf(0, 50, "pikachyuuuuu");
 
 
 

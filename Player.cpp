@@ -25,6 +25,8 @@ void Player::InitPlayer() {
 	status_.height = 64.0f;
 	status_.width = 64.0f;
 
+	cmdIndex = 0;
+
 }
 
 void Player::UpdatePlayer(char keys[256], char preKeys[256], int  mapData[kMapHeight][kMapWidth]){
@@ -33,6 +35,115 @@ void Player::UpdatePlayer(char keys[256], char preKeys[256], int  mapData[kMapHe
 		MovePlayer(keys, preKeys,mapData);
 	}
 }
+
+// コマンドで動かせるプレイヤー
+void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapData[kMapHeight][kMapWidth]) {
+	if (!status_.isActive) return;
+
+	// まだ実行すべきコマンドが残っているか？
+	if (cmdIndex < commands.size()) {
+
+		CommandType currentCmd = commands[cmdIndex];
+
+		switch (currentCmd) {
+
+			// ---------------------------------------------------
+			// 右へ進む：
+			// 「右へ動く力」を与えたら、即座に次のコマンドへ進む。
+			// 力は残り続けるので、結果として「ずっと右へ」になる。
+			// ---------------------------------------------------
+		case CommandType::MoveRight:
+			status_.pos.x += status_.Speed;
+
+			// 移動コマンドは「実行したら終わり」なので次へ
+			cmdIndex++;
+
+			// ★ポイント：
+			// もし「MoveRight」の直後に「CheckWall」がある場合、
+			// 同じフレーム内で即座にチェックを開始したいので、
+			// ここで再帰呼び出し（またはループ）してもいいですが、
+			// 今回はシンプルに「次のフレームから次のコマンドを実行」にします。
+			break;
+
+			// ---------------------------------------------------
+			// 壁があったらジャンプ：
+			// 「壁が来るまで待機」する。
+			// ---------------------------------------------------
+		case CommandType::CheckWallJump:
+			// とりあえず右には進み続ける（MoveRightの効果を持続させるため）
+			// ※もしMoveRightブロックなしでも進ませたいならここでも pos.x += speed する
+			status_.pos.x += status_.Speed;
+
+			// 壁チェック
+			if (IsWallAhead(mapData)) {
+				// 壁があった！ -> ジャンプ実行
+				ActionTryJump();
+
+				// このブロックの役目は終わったので次へ進む
+				// （これで「一回だけ」が実現できます）
+				cmdIndex++;
+			} else {
+				// 壁がない -> まだこのブロックにとどまる
+				// cmdIndex を増やさないことで、次のフレームもこのチェックを行います。
+			}
+			break;
+
+			// ---------------------------------------------------
+			// 崖があったらジャンプ：
+			// 「崖が来るまで待機」する。
+			// ---------------------------------------------------
+		case CommandType::CheckCliffJump:
+			status_.pos.x += status_.Speed;
+
+			if (IsCliffAhead(mapData)) {
+				ActionTryJump();
+				cmdIndex++; // 役目を終えたので次へ
+			}
+			break;
+		}
+	} else {
+		// コマンドリストが全部終わった後の挙動
+		// 例：そのまま右に進み続けるなら
+		status_.pos.x += status_.Speed;
+	}
+
+	// 物理演算（重力）
+	// 物理演算があるならここで
+	 // 重力
+	status_.Velocity.y += 0.38f;
+	status_.pos.y += status_.Velocity.y;
+
+	// ===== 床当たり判定 =====
+	float footY = status_.pos.y + status_.height;
+	float leftX = status_.pos.x + 2;
+	float rightX = status_.pos.x + status_.width - 2;
+
+	int tileY = (int)(footY / kTileSize);
+	int tileLeftX = (int)(leftX / kTileSize);
+	int tileRightX = (int)(rightX / kTileSize);
+
+	// 配列範囲チェック
+	if (tileY >= 0 && tileY < kMapHeight &&
+		tileLeftX >= 0 && tileRightX < kMapWidth) {
+
+		// 足元にブロックがあるか？
+		if (mapData[tileY][tileLeftX] != 0 ||
+			mapData[tileY][tileRightX] != 0) {
+
+			// 地面の上に補正
+			status_.pos.y = tileY * kTileSize - status_.height;
+			status_.Velocity.y = 0.0f;
+			status_.isJumop = false;
+		}
+	}
+
+
+}
+
+
+
+
+
 
 void Player::DrawPlayer() {
 	Novice::DrawBox(static_cast<int>(status_.pos.x), static_cast<int>(status_.pos.y),
@@ -97,4 +208,44 @@ void Player::Gravity() {
 
 	status_.Velocity.y += 0.38f;
 	status_.pos.y += status_.Velocity.y;
+}
+
+/*--------------------
+コマンドでうごかす処理
+---------------------*/
+
+void Player::ActionMoveRight() {
+	status_.pos.x += status_.Speed;
+}
+
+void Player::ActionTryJump() {
+	if (!status_.isJumop) {
+		status_.isJumop = true;
+		status_.Velocity.y = -status_.jumpPower;
+	}
+}
+
+// 前に壁があるかチェック
+bool Player::IsWallAhead(int mapData[kMapHeight][kMapWidth]) {
+	// 自分の右端 + 5ピクセル先を見る
+	int checkX = (int)(status_.pos.x + status_.width + 5.0f) / kTileSize;
+	int checkY = (int)(status_.pos.y + status_.height / 2.0f) / kTileSize;
+
+	if (checkX >= 0 && checkX < kMapWidth && checkY >= 0 && checkY < kMapHeight) {
+		if (mapData[checkY][checkX] != 0) return true; // 壁あり
+	}
+	return false;
+}
+
+// 足元が崖かチェック
+bool Player::IsCliffAhead(int mapData[kMapHeight][kMapWidth]) {
+	// 自分の右端 + 5ピクセル先を見る
+	int checkX = (int)(status_.pos.x + status_.width + 5.0f) / kTileSize;
+	// 足元 + 5ピクセル下を見る
+	int checkY = (int)(status_.pos.y + status_.height + 5.0f) / kTileSize;
+
+	if (checkX >= 0 && checkX < kMapWidth && checkY >= 0 && checkY < kMapHeight) {
+		if (mapData[checkY][checkX] == 0) return true; // 0なら崖
+	}
+	return false;
 }
