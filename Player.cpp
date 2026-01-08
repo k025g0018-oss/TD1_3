@@ -121,7 +121,7 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
 
 
-#pragma region 右のタイルの当たり判定と補正]
+#pragma region 左右のタイルの当たり判定と補正]
 
 	// 右壁の判定
 	// 右壁の判定
@@ -158,6 +158,13 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 			status_.pos.y = (float)(tileBottomY * kTileSize) - status_.height;
 			status_.Velocity.y = 0.0f;
 			status_.isJumop = false;
+		}
+	}
+	else if (status_.Velocity.y < 0) {
+		int headY = (int)(topY / kTileSize);
+		if (mapData[headY][tileLeftX] != 0 || mapData[headY][tileRightX] != 0) {
+			status_.pos.y = (float)(headY + 1) * kTileSize;
+			status_.Velocity.y = 0.0f; // 天井にぶつかったら速度ゼロ
 		}
 	}
 
@@ -256,9 +263,15 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
 			status_.Velocity.y = 0.0f;
 			status_.isJumop = false;
 		}
+	}else if (status_.Velocity.y < 0) {
+		int headY = (int)(topY / kTileSize);
+		if (mapData[headY][tileLeftX] != 0 || mapData[headY][tileRightX] != 0) {
+			status_.pos.y = (float)(headY + 1) * kTileSize;
+			status_.Velocity.y = 0.0f; // 天井にぶつかったら速度ゼロ
+		}
 	}
 
-	if (status_.pos.y >= 1080 - status_.height) {
+	if(status_.pos.y >= 1080 - status_.height) {
 		status_.pos.y = 0;
 	}
 
