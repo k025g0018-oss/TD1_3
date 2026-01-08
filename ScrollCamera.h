@@ -1,20 +1,20 @@
-#pragma once
+ï»¿#pragma once
 #include "Vector2.h"
 
 class ScrollCamera {
 public:
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	ScrollCamera();
 
-	// ƒfƒXƒgƒ‰ƒNƒ^
+	// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	~ScrollCamera();
 	
 	void Update(Vector2& playerPos);
 
 private:
-	// ƒJƒƒ‰‚ÌˆÊ’u
+	// ã‚«ãƒ¡ãƒ©ã®ä½ç½®
 	Vector2 worldPos_;
 	float speed_;
-	Vector2 offset_; // Šî“_
+	Vector2 offset_; // åŸºç‚¹
 };
 

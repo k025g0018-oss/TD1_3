@@ -1,16 +1,16 @@
-#include "ScrollCamera.h"
+ï»¿#include "ScrollCamera.h"
 #include <Novice.h>
 #include "Game.h"
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
 
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 
 
-// XV
+// æ›´æ–°
 void ScrollCamera::Update(Vector2& playerPos) {
-	// ƒvƒŒƒCƒ„[‚ğ‰æ–Ê‚Ì’†S
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç”»é¢ã®ä¸­å¿ƒ
 	worldPos_ = playerPos;
 	offset_.x = worldPos_.x - (Game().gameScreen.size.x / 2);
 }
