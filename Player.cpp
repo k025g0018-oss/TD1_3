@@ -19,7 +19,7 @@ void Player::InitPlayer() {
 	status_.scale.y = 64.0f;
 	status_.isActive = true;
 	status_.isJumop = false;
-	status_.jumpPower = 13.0f;
+	status_.jumpPower = 20.0f;
 	status_.radius = 64.0f;
 
 	status_.height = 64.0f;
@@ -131,6 +131,6 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
 
 void Player::Gravity() {
 
-	status_.Velocity.y += 0.38f;
+	status_.Velocity.y += 0.98f;
 	status_.pos.y += status_.Velocity.y;
 }
