@@ -1,10 +1,13 @@
 ﻿#pragma once
 #include "Vector2.h"
+
 #include "Player.h"
 #include "Command.h"
 #include "const.h" 
 #include <vector>
 #include "Map.h"
+#include "ScrollCamera.h"
+
 
 struct GameScreen {
 	Vector2 position;
@@ -46,14 +49,20 @@ private:
 	GameScreen gameScreen;
 	CommandScreen commandScreen;
 
+
 	Player* player;
 	Map* map;
+
+	ScrollCamera* scrollCamera;
+
+	// ゲームシーン
 
 	// エリア
 	struct Area { float x, y, w, h; };
 	Area gameArea;    // 左側：ゲーム画面
 	Area paletteArea; // 右上：コマンド選択
 	Area programArea; // 右下：プログラム置き場
+
 
 	// プレイヤーとマップデータ
 
@@ -72,6 +81,10 @@ private:
 	Button btnCliffJump;
 	Button btnStart;
 	Button btnReset;
+
+	// 更新
+	void Update();
+
 
 };
 

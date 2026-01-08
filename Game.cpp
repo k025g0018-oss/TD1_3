@@ -1,6 +1,10 @@
 ﻿#include "Game.h"
 #include <Novice.h>
+
 #include "Map.h"
+#include "Player.h"
+#include "ScrollCamera.h"
+
 
 Game::Game() {
 	player = new Player();
@@ -12,6 +16,7 @@ Game::~Game() {
 	delete player;
 	delete map;
 }
+
 
 void Game::Initialize() {
 	// エリア定義
@@ -99,6 +104,7 @@ void Game::Update(char keys[256], char preKeys[256]) {
 			}
 		}
 	}
+
 }
 
 void Game::Draw() {

@@ -1,4 +1,4 @@
-﻿#include <Novice.h>
+#include <Novice.h>
 #define _USE_MATH_DEFINES
 #include <assert.h>
 #include "Map.h"
@@ -134,6 +134,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	delete sceneManager;
 
 	delete map;
+
+	delete player;
 
 	// ライブラリの終了
 	Novice::Finalize();
