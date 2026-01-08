@@ -3,6 +3,9 @@
 #include <assert.h>
 #include <math.h>
 
+// (^▽^)/あ
+
+
 const char kWindowTitle[] = "TD1_3";
 
 //////////
@@ -71,6 +74,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//////////
 
 		Novice::ScreenPrintf(0, 0, "Hello, Novice!");
+		//
+		Novice::ScreenPrintf(0, 50, "pikachyuuuuu");
 
 		///
 		/// ↑描画処理ここまで
