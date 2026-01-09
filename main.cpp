@@ -52,8 +52,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
 	player->InitPlayer();
-	map->LoadMapFromLDtk("./mapTest9999.ldtk");
-	int textureBlock = Novice::LoadTexture("./block.png");
+	map->LoadMapFromLDtk("./mapTest9999.ldtk",{"IntGrid","HalfBlock"});
+	//int textureBlock = Novice::LoadTexture("./block.png");
 
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -106,7 +106,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// 自機
 		//////////
 
-		map->Draw(textureBlock);
+		map->Draw();
 	
 		
 		

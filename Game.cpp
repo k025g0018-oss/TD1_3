@@ -28,7 +28,14 @@ void Game::Initialize() {
 	player->InitPlayer();
 	commandList.clear();
 
-	map->LoadMapFromLDtk("./mapTest9999.ldtk");
+	map->Initialize();
+
+	/*------------------------------
+	ここにレイヤー名をいれるんだ！！
+	-----------------------------*/
+	std::vector<std::string> layers = { "IntGrid","HalfBlock" };
+
+	map->LoadMapFromLDtk("./mapTest9999.ldtk",layers);
 
 
 	// ★パレットエリアにボタンを配置
@@ -120,16 +127,8 @@ void Game::Draw() {
 
 
 	// --- ゲーム画面 ---
-	for (int y = 0; y < kMapHeight; y++) {
-		for (int x = 0; x < kMapWidth; x++) {
-			if (mapData[y][x] != 0) Novice::DrawBox(x * kTileSize, y * kTileSize, kTileSize, kTileSize, 0.0f, WHITE, kFillModeSolid);
-		}
-	}
-
-	int Texture = Novice::LoadTexture("./block.png");
-	map->Draw(Texture);
-
 	player->DrawPlayer();
+	map->Draw();
 
 
 	// --- UIボタン描画 ---
