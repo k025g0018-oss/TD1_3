@@ -223,7 +223,27 @@ void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
 
 	// 下方向（床）の判定
 	if (status_.Velocity.y > 0) {
-		if (mapData[tileBottomY][tileLeftX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
+
+		int idLeft = mapData[tileBottomY][tileLeftX];
+		int idRight = mapData[tileBottomY][tileRightX];
+
+		// ハーフブロックの判定処理
+	
+
+		// 左足チェック
+		if (idLeft == 2) {
+			float localX = leftX - (tileLeftX * kTileSize); 
+			if (localX >= 32.0f) idLeft = 0; 
+		}
+
+		// 右足チェック
+		if (idRight == 2) {
+			float localX = rightX - (tileRightX * kTileSize);
+			if (localX >= 32.0f) idRight = 0; 
+		}
+
+		// どちらかの足がブロックに乗っていれば着地
+		if (idLeft != 0 || idRight != 0) {
 			status_.pos.y = (float)(tileBottomY * kTileSize) - status_.height;
 			status_.Velocity.y = 0;
 			status_.isJumop = false;
@@ -260,9 +280,26 @@ void Player::isLeftWall(int mapData[kMapHeight][kMapWidth]) {
 	int tileTopY = (int)(topY / kTileSize);
 	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
 
-	if (mapData[tileTopY][tileLeftX] != 0 || mapData[tileBottomY][tileLeftX] != 0) {
-		// 【修正点】左に押し出すのではなく、タイルの右側（+1）へ押し戻す
-		status_.pos.x = (float)((tileLeftX + 1) * kTileSize);
+	int idTop = mapData[tileTopY][tileLeftX];
+	int idBottom = mapData[tileBottomY][tileLeftX];
+
+	if (idTop != 0 || idBottom != 0) {
+		// ぶつかったブロックのIDを取得（上が優先、なければ下）
+		int hitID = (idTop != 0) ? idTop : idBottom;
+
+		// ハーフブロックの場合
+		// 右半分がないので、タイルの右端ではなく「中央(+32)」まで食い込める
+		if (hitID == 2) {
+			float localX = leftX - (tileLeftX * kTileSize);
+
+			if (localX < 32.0f) {
+				status_.pos.x = (float)(tileLeftX * kTileSize) + 32.0f;
+			}
+		}
+		// 通常ブロックの場合
+		else {
+			status_.pos.x = (float)((tileLeftX + 1) * kTileSize);
+		}
 	}
 }
 
@@ -280,14 +317,21 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth]) {
 
 	// 上方向（頭上）の判定：上昇中（Velocity.y < 0）のみチェック
 	if (status_.Velocity.y < 0) {
-		// 頭上の左端または右端にタイル（0以外）があるか
-		if (mapData[tileTopY][tileLeftX] != 0 || mapData[tileTopY][tileRightX] != 0) {
+		int idLeft = mapData[tileTopY][tileLeftX];
+		int idRight = mapData[tileTopY][tileRightX];
 
-			// 【修正】位置をタイルの「下端」に押し戻す
-			// (tileTopY + 1) * kTileSize は、衝突したタイルの下のラインの座標
+		// 空気部分への頭突きを無効化する
+		if (idLeft == 2) {
+			float localX = leftX - (tileLeftX * kTileSize);
+			if (localX >= 32.0f) idLeft = 0;
+		}
+		if (idRight == 2) {
+			float localX = rightX - (tileRightX * kTileSize);
+			if (localX >= 32.0f) idRight = 0;
+		}
+
+		if (idLeft != 0 || idRight != 0) {
 			status_.pos.y = (float)((tileTopY + 1) * kTileSize);
-
-			// 上昇速度をゼロにする（頭をぶつけて止まる）
 			status_.Velocity.y = 0;
 		}
 	}
