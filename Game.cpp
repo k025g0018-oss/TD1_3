@@ -88,7 +88,6 @@ void Game::Update(char keys[256], char preKeys[256]) {
 				player->InitPlayer();
 			}
 
-			// 3. プログラムエリアのブロックをクリックして削除
 			// 下の方に表示されているブロックほど、リストの後ろの方にある
 			float blockY = programArea.y + 50;
 			for (int i = 0; i < commandList.size(); i++) {
@@ -98,7 +97,7 @@ void Game::Update(char keys[256], char preKeys[256]) {
 
 					// このコマンドを削除する
 					commandList.erase(commandList.begin() + i);
-					break; // 削除したらループを抜ける（indexがずれるため）
+					break; 
 				}
 				blockY += 60; // 次のブロックの位置へ
 			}
