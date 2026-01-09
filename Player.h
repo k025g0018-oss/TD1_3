@@ -55,6 +55,12 @@ private:
     bool IsWallAhead(int mapData[kMapHeight][kMapWidth]);
     bool IsCliffAhead(int mapData[kMapHeight][kMapWidth]);
 
+	// マップの当たり判定関数
+	void isGrounded(int mapData[kMapHeight][kMapWidth]);
+	void isRightWall(int mapData[kMapHeight][kMapWidth]);
+	void isLeftWall(int mapData[kMapHeight][kMapWidth]);
+	void isTopWall(int mapData[kMapHeight][kMapWidth]);
+
     // コマンド実行時のインデックス
     int cmdIndex;
 
