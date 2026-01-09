@@ -55,14 +55,8 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 		case CommandType::MoveRight:
 			status_.pos.x += status_.Speed;
 
-			// 移動コマンドは「実行したら終わり」なので次へ
 			cmdIndex++;
 
-			// ★ポイント：
-			// もし「MoveRight」の直後に「CheckWall」がある場合、
-			// 同じフレーム内で即座にチェックを開始したいので、
-			// ここで再帰呼び出し（またはループ）してもいいですが、
-			// 今回はシンプルに「次のフレームから次のコマンドを実行」にします。
 			break;
 
 			// ---------------------------------------------------
@@ -70,22 +64,14 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 			// 「壁が来るまで待機」する。
 			// ---------------------------------------------------
 		case CommandType::CheckWallJump:
-			// とりあえず右には進み続ける（MoveRightの効果を持続させるため）
-			// ※もしMoveRightブロックなしでも進ませたいならここでも pos.x += speed する
 			status_.pos.x += status_.Speed;
 
-			// 壁チェック
-			if (IsWallAhead(mapData)) {
-				// 壁があった！ -> ジャンプ実行
-				ActionTryJump();
-
-				// このブロックの役目は終わったので次へ進む
-				// （これで「一回だけ」が実現できます）
-				cmdIndex++;
-			}
-			else {
-				// 壁がない -> まだこのブロックにとどまる
-				// cmdIndex を増やさないことで、次のフレームもこのチェックを行います。
+			// 壁があったらジャンプ
+			if (!status_.isJumop) {
+				if (IsWallAhead(mapData)) {
+					ActionTryJump();
+					cmdIndex++; 
+				}
 			}
 			break;
 
@@ -96,16 +82,17 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 		case CommandType::CheckCliffJump:
 			status_.pos.x += status_.Speed;
 
-			if (IsCliffAhead(mapData)) {
-				ActionTryJump();
-				cmdIndex++; // 役目を終えたので次へ
+			// ★重要修正：地面にいるときだけチェックする！
+			if (!status_.isJumop) {
+				if (IsCliffAhead(mapData)) {
+					ActionTryJump();
+					cmdIndex++; // ジャンプしたので役目終了、次へ
+				}
 			}
 			break;
 		}
-	}
-	else {
-		// コマンドリストが全部終わった後の挙動
-		// 例：そのまま右に進み続けるなら
+	} else {
+		// コマンドがなくなった後
 		status_.pos.x += status_.Speed;
 	}
 
@@ -121,7 +108,7 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
 
 
-#pragma region 左右のタイルの当たり判定と補正]
+#pragma region 左右のタイルの当たり判定と補正
 
 	// 右壁の判定
 	// 右壁の判定
