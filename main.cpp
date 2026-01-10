@@ -1,4 +1,4 @@
-#include <Novice.h>
+﻿#include <Novice.h>
 #define _USE_MATH_DEFINES
 #include <assert.h>
 #include "Map.h"
@@ -11,6 +11,7 @@
 #include "Vector2.h"
 #include "SceneManager.h"
 #include "Game.h"
+#include "Router.h"
 
 // (^▽^)/あ
 // (^▽^)/あ
@@ -51,10 +52,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//Game* game = new Game();
 
 
+	Router* router[250] = { 0 };
+	
 	player->InitPlayer();
 	map->LoadMapFromLDtk("./mapTest9999.ldtk");
 	int textureBlock = Novice::LoadTexture("./block.png");
 
+	for (int i = 0; i < 250; i++) {
+		router[i] = new Router(i, map->mapData);
+	}
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -82,8 +88,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		} else {
 			Novice::SetWindowMode(kWindowed);
 		}
-		
-
+		/*for (int i = 0; i < 250; i++) {
+			router[i]->UpdateRouter(map->mapData);
+		}*/
 		//////////
 		/// 自機
 		//////////
@@ -105,9 +112,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//////////
 		/// 自機
 		//////////
+		
 
+		for (int i = 0; i < 250; i++) {
+
+			router[i]->DrawRouter();
+		}
+		
 		map->Draw(textureBlock);
-	
 		
 		
 		//////////
@@ -137,6 +149,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	delete player;
 
+	for (int i = 0; i < 250; i++) {
+		delete router[i];
+	}
 	// ライブラリの終了
 	Novice::Finalize();
 	return 0;

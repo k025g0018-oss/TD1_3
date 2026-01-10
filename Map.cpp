@@ -50,6 +50,22 @@ void Map::Draw(int textureHandle) {
 					textureHandle, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
 				);
 			}
+
+			//ルーターのデバック表示
+			if (mapData[y][x] == 2) {
+			
+				Novice::DrawBox(
+
+					x * kTileSize, y * kTileSize,
+					kTileSize, kTileSize,
+					0.0f,
+					RED,
+					kFillModeSolid
+
+				);
+
+			}
+
 		}
 	}
 }
