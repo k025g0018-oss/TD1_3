@@ -10,21 +10,31 @@ Player::Player() {
 void Player::InitPlayer() {
 	status_.pos.x = 300.0f;
 	status_.pos.y = 300.0f;
+	
+	//加速度計
 	status_.acceleration.x = 0.0f;
 	status_.acceleration.y = 0.0f;
 	status_.Velocity.x = 0.0f;
 	status_.Velocity.y = +9.8f;
 	status_.Speed = 5.0f;
+	
+	//スケール
 	status_.scale.x = 64.0f;
 	status_.scale.y = 64.0f;
+	
 	status_.isActive = true;
 	status_.isJumop = false;
 	status_.jumpPower = 20.0f;
 	status_.radius = 64.0f;
-
+	
+	//幅高さ
 	status_.height = 64.0f;
 	status_.width = 64.0f;
 
+	//自由に動けるかの確認
+	status_.isMoveFree = true;
+	status_.isCommandMove = true;
+	
 	cmdIndex = 0;
 
 }
@@ -70,7 +80,7 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 			if (!status_.isJumop) {
 				if (IsWallAhead(mapData)) {
 					ActionTryJump();
-					cmdIndex++; 
+					cmdIndex++;
 				}
 			}
 			break;
@@ -91,7 +101,8 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 			}
 			break;
 		}
-	} else {
+	}
+	else {
 		// コマンドがなくなった後
 		status_.pos.x += status_.Speed;
 	}
@@ -125,26 +136,26 @@ void Player::DrawPlayer() {
 
 void Player::MovePlayer(char keys[256], char preKeys[256],
 	int mapData[kMapHeight][kMapWidth]) {
+	if (status_.isMoveFree) {
+		// ジャンプ（押した瞬間）
+		if (!status_.isJumop) {
+			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+				status_.isJumop = true;
+				status_.Velocity.y = -status_.jumpPower;
+			}
+		}
 
-	// ジャンプ（押した瞬間）
-	if (!status_.isJumop) {
-		if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
-			status_.isJumop = true;
-			status_.Velocity.y = -status_.jumpPower;
+
+		// --- 左右移動の処理 ---
+		if (keys[DIK_D]) {
+
+			status_.pos.x += status_.Speed;
+		}
+		if (keys[DIK_A]) {
+
+			status_.pos.x -= status_.Speed;
 		}
 	}
-
-
-	// --- 左右移動の処理 ---
-	if (keys[DIK_D]) {
-
-		status_.pos.x += status_.Speed;
-	}
-	if (keys[DIK_A]) {
-
-		status_.pos.x -= status_.Speed;
-	}
-
 	isRightWall(mapData);
 	isLeftWall(mapData);
 	Gravity();
@@ -295,3 +306,43 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth]) {
 
 
 #pragma endregion
+
+void Player::CheckRouter(Router* router[], int count) {
+	// ★1. まずは「圏外」のデフォルト状態にする
+	// 全てのルーターから外れているときは、動けないように設定
+	status_.isMoveFree = false;
+	status_.isCommandMove = false;
+
+	for (int i = 0; i < count; i++) {
+		// 未生成のルーターを飛ばすガード句
+		if (router[i] == nullptr) continue;
+		if (router[i]->router_.pos.x < -5000.0f) continue;
+
+		// ★2. 座標の計算（プレイヤーの中心 vs ルーターの中心）
+		// 矩形(左上)と円の判定だとズレるので、プレイヤーの中心座標を作る
+		float playerCenterX = status_.pos.x + status_.width / 2.0f;
+		float playerCenterY = status_.pos.y + status_.height / 2.0f;
+
+		float dx = router[i]->router_.pos.x - playerCenterX;
+		float dy = router[i]->router_.pos.y - playerCenterY;
+		float distSq = dx * dx + dy * dy;
+
+		float r = router[i]->router_.radius;
+		float br = router[i]->router_.bigRadius;
+
+		// ★3. 判定（内側の円）
+		if (distSq <= r * r) {
+			status_.isMoveFree = true;
+			status_.isCommandMove = true;
+			return; // 最高の状態なので、これ以上他のルーターは見なくて良い
+		}
+		// ★4. 判定（外側の円：内側には入っていないが外側には入っている）
+		else if (distSq <= br * br) {
+			status_.isMoveFree = false;
+			status_.isCommandMove = true;
+			// 他のルーターでもっと良い条件（内側）があるかもしれないので、
+			// ここでは return せずにループを続けるか、
+			// 「最低でもコマンド移動はできる」というフラグだけ立てておく
+		}
+	}
+}
