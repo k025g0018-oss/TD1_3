@@ -55,8 +55,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Router* router[250] = { 0 };
 	
 	player->InitPlayer();
-	map->LoadMapFromLDtk("./mapTest9999.ldtk");
-	int textureBlock = Novice::LoadTexture("./block.png");
+	map->LoadMapFromLDtk("./mapTest9999.ldtk",{"IntGrid","HalfBlock"});
+	//int textureBlock = Novice::LoadTexture("./block.png");
 
 	for (int i = 0; i < 250; i++) {
 		router[i] = new Router(i, map->mapData);
