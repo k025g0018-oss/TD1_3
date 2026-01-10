@@ -113,12 +113,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// 自機
 		//////////
 		
-
-		for (int i = 0; i < 250; i++) {
-
-			router[i]->DrawRouter();
-		}
-		
 		map->Draw(textureBlock);
 		
 		

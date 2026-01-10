@@ -4,7 +4,8 @@
 #include "Map.h"
 #include "Player.h"
 #include "ScrollCamera.h"
-
+#include "Router.h"
+#include "Router.h"
 
 Game::Game() {
 	player = new Player();
@@ -15,6 +16,10 @@ Game::Game() {
 Game::~Game() {
 	delete player;
 	delete map;
+	for (int i = 0; i < routerCount; ++i) {
+		delete router[i];
+		router[i] = nullptr;
+	}
 }
 
 
@@ -29,6 +34,19 @@ void Game::Initialize() {
 	commandList.clear();
 
 	map->Initialize();
+
+	//ルーターの生成
+	routerCount = 0;
+	for (int y = 0; y < kMapHeight; y++) {
+		for (int x = 0; x < kMapWidth; x++) {
+			if (map->mapData[y][x] == 2) { // 2をルーターとする
+				if (routerCount < 250) {
+					router[routerCount] = new Router(routerCount, map->mapData);
+					routerCount++;
+				}
+			}
+		}
+	}
 
 	/*------------------------------
 	ここにレイヤー名をいれるんだ！！
@@ -64,7 +82,7 @@ void Game::Update(char keys[256], char preKeys[256]) {
 	if (isRunning) {
 		// --- 実行モード ---
 		player->UpdateByCommands(commandList, map->mapData);
-
+		player->CheckRouter(router, 250);
 		// ストップボタン判定
 		if (isClick) {
 			if (mouseX >= btnReset.x && mouseX <= btnReset.x + btnReset.w &&
@@ -76,6 +94,7 @@ void Game::Update(char keys[256], char preKeys[256]) {
 	} else {
 		// --- 編集モード ---
 		player->UpdatePlayer(keys, preKeys, map->mapData);
+		player->CheckRouter(router, 250);
 
 		if (isClick) {
 			// 1. パレットのボタンを押してコマンドを追加
