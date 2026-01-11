@@ -25,6 +25,8 @@ void Map::Initialize() {
 	-----------------------------*/
 	blockTextures[1] = Novice::LoadTexture("./block.png");
 	blockTextures[2] = Novice::LoadTexture("./halfBlock.png");// ハーフブロック用
+	blockTextures[3] = Novice::LoadTexture("./halfBlock.png");// ルーター用
+
 }
 
 // LDtk読み込み
@@ -93,7 +95,7 @@ void Map::Draw() {
 			}
 
 			//ルーターのデバック表示
-			if (mapData[y][x] == 2) {
+			if (mapData[y][x] == 3) {
 			
 				Novice::DrawBox(
 

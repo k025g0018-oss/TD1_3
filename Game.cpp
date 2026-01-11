@@ -37,9 +37,19 @@ void Game::Initialize() {
 
 	//ルーターの生成
 	routerCount = 0;
+
+
+	/*------------------------------
+	ここにレイヤー名をいれるんだ！！
+	-----------------------------*/
+	std::vector<std::string> layers = { "IntGrid","HalfBlock" };
+
+	map->LoadMapFromLDtk("./mapTest9999.ldtk", layers);
+
+
 	for (int y = 0; y < kMapHeight; y++) {
 		for (int x = 0; x < kMapWidth; x++) {
-			if (map->mapData[y][x] == 2) { // 2をルーターとする
+			if (map->mapData[y][x] == 3) { // 3をルーターとする
 				if (routerCount < 250) {
 					router[routerCount] = new Router(routerCount, map->mapData);
 					routerCount++;
@@ -47,14 +57,6 @@ void Game::Initialize() {
 			}
 		}
 	}
-
-	/*------------------------------
-	ここにレイヤー名をいれるんだ！！
-	-----------------------------*/
-	std::vector<std::string> layers = { "IntGrid","HalfBlock" };
-
-	map->LoadMapFromLDtk("./mapTest9999.ldtk",layers);
-
 
 	// ★パレットエリアにボタンを配置
 	float btnX = 1450;
@@ -76,6 +78,12 @@ void Game::Update(char keys[256], char preKeys[256]) {
 	Novice::GetMousePosition(&mouseX, &mouseY);
 	bool isClick = Novice::IsTriggerMouse(0);
 
+	for (int i = 0; i < routerCount; i++) {
+		if (router[i] != nullptr) {
+			router[i]->UpdateRouter(mapData); // Routerクラスにある描画関数を呼ぶ
+		}
+	}
+
 	// ==========================================
 	// モード分岐
 	// ==========================================
@@ -91,7 +99,8 @@ void Game::Update(char keys[256], char preKeys[256]) {
 				player->InitPlayer();
 			}
 		}
-	} else {
+	}
+	else {
 		// --- 編集モード ---
 		player->UpdatePlayer(keys, preKeys, map->mapData);
 		player->CheckRouter(router, 250);
@@ -123,7 +132,7 @@ void Game::Update(char keys[256], char preKeys[256]) {
 
 					// このコマンドを削除する
 					commandList.erase(commandList.begin() + i);
-					break; 
+					break;
 				}
 				blockY += 60; // 次のブロックの位置へ
 			}
@@ -144,6 +153,11 @@ void Game::Draw() {
 	// 区切り線
 	Novice::DrawBox(1400, 398, 580, 4, 0.0f, WHITE, kFillModeSolid);
 
+	for (int i = 0; i < routerCount; i++) {
+		if (router[i] != nullptr) {
+			router[i]->DrawRouter(); // Routerクラスにある描画関数を呼ぶ
+		}
+	}
 
 	// --- ゲーム画面 ---
 	player->DrawPlayer();
@@ -220,7 +234,8 @@ void Game::Draw() {
 		Novice::ScreenPrintf(10, 10, "RUNNING...");
 		// 画面全体に枠を表示して実行中っぽくする
 		Novice::DrawBox(0, 0, 1400, 1080, 0.0f, 0xFF000044, kFillModeSolid);
-	} else {
+	}
+	else {
 		Novice::ScreenPrintf(10, 10, "EDIT MODE");
 	}
 
