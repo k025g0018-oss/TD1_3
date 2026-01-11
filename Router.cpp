@@ -15,7 +15,7 @@ void Router::InitRouter(int id, int mapData[kMapHeight][kMapWidth]) {
 
 	for (int y = 0; y < kMapHeight; y++) {
 		for (int x = 0; x < kMapWidth; x++) {
-			if (mapData[y][x] == 2) {
+			if (mapData[y][x] == 3) {
 				if (idCount == id_) {
 					router_.pos.x = (float)x * kTileSize + (kTileSize / 2.0f);
 					router_.pos.y = (float)y * kTileSize + (kTileSize / 2.0f);
@@ -34,7 +34,7 @@ void Router::UpdateRouter(int mapData[kMapHeight][kMapWidth]) {
 	int idCount=0;
 	for (int y = 0; y < kMapHeight; y++) {
 		for (int x = 0; x < kMapWidth; x++) {
-			if (mapData[y][x] == 2) {
+			if (mapData[y][x] == 3) {
 				if (idCount == id_) {
 					// 配列の添字(x, y)にチップサイズを掛けて座標に変換
 					router_.pos.x = (float)x * kTileSize + (kTileSize / 2.0f); // 中心に合わせるなら半分足す
