@@ -3,7 +3,7 @@
 #include <vector>    
 #include"Novice.h"
 Router::Router(int id, int mapData[kMapHeight][kMapWidth]) {
-	InitRouter(id,mapData);
+	InitRouter(id, mapData);
 }
 
 void Router::InitRouter(int id, int mapData[kMapHeight][kMapWidth]) {
@@ -12,6 +12,19 @@ void Router::InitRouter(int id, int mapData[kMapHeight][kMapWidth]) {
 	router_.radius = 500.0f;
 	router_.bigRadius = 1300.0f;
 	router_.pos = { -100000.0f,-100000.0f };
+
+	switch (id_)
+	{
+
+	case 0://ルーターの効果範囲の設定
+		router_.radius = 1000.0f;
+		router_.bigRadius = 1300.0f;
+
+		break;
+
+	default:
+		break;
+	}
 
 	for (int y = 0; y < kMapHeight; y++) {
 		for (int x = 0; x < kMapWidth; x++) {
@@ -25,13 +38,10 @@ void Router::InitRouter(int id, int mapData[kMapHeight][kMapWidth]) {
 			}
 		}
 	}
-
-
-
 }
 
 void Router::UpdateRouter(int mapData[kMapHeight][kMapWidth]) {
-	int idCount=0;
+	int idCount = 0;
 	for (int y = 0; y < kMapHeight; y++) {
 		for (int x = 0; x < kMapWidth; x++) {
 			if (mapData[y][x] == 3) {
@@ -49,9 +59,9 @@ void Router::UpdateRouter(int mapData[kMapHeight][kMapWidth]) {
 
 void Router::DrawRouter() {
 	//ルーターのデバック表示
-	
+
 	Novice::DrawEllipse(
-		(int)router_.pos.x,(int) router_.pos.y,
+		(int)router_.pos.x, (int)router_.pos.y,
 		(int)router_.bigRadius, (int)router_.bigRadius,
 		0.0f,
 		0xFF00FF0f,
