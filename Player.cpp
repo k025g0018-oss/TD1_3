@@ -256,7 +256,8 @@ bool Player::IsCliffAhead(int mapData[kMapHeight][kMapWidth]) {
 //	}
 //}
 
-void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
+// --- 接地判定 ---
+void Player::isGrounded(int mapData[kMapHeight][kMapWidth], int mapId) {
 	// 下方向に移動していないなら判定不要
 	if (status_.Velocity.y <= 0) return;
 	float leftX = status_.pos.x;
@@ -271,13 +272,12 @@ void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
 	// Y軸の範囲チェック
 	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
 		bool collision = false;
-		// X軸の範囲チェック（左側）
 		if (tileLeftX >= 0 && tileLeftX < kMapWidth) {
-			if (mapData[tileBottomY][tileLeftX] != 0) collision = true;
+			// != 0 ではなく mapId と比較する
+			if (mapData[tileBottomY][tileLeftX] == mapId) collision = true;
 		}
-		// X軸の範囲チェック（右側）
 		if (tileRightX >= 0 && tileRightX < kMapWidth) {
-			if (mapData[tileBottomY][tileRightX] != 0) collision = true;
+			if (mapData[tileBottomY][tileRightX] == mapId) collision = true;
 		}
 
 		if (collision) {
@@ -308,7 +308,8 @@ void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
 //	}
 //}
 
-void Player::isRightWall(int mapData[kMapHeight][kMapWidth]) {
+// --- 右壁判定 ---
+void Player::isRightWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	float rightX = status_.pos.x + status_.width;
 	float topY = status_.pos.y;
 	float bottomY = status_.pos.y + status_.height;
@@ -323,11 +324,11 @@ void Player::isRightWall(int mapData[kMapHeight][kMapWidth]) {
 	bool collision = false;
 	// 上端の判定（Y範囲チェック込）
 	if (tileTopY >= 0 && tileTopY < kMapHeight) {
-		if (mapData[tileTopY][tileRightX] != 0) collision = true;
+		if (mapData[tileTopY][tileRightX] == mapId) collision = true;
 	}
 	// 下端の判定（Y範囲チェック込）
 	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
-		if (mapData[tileBottomY][tileRightX] != 0) collision = true;
+		if (mapData[tileBottomY][tileRightX] == mapId) collision = true;
 	}
 
 	if (collision) {
@@ -351,7 +352,8 @@ void Player::isRightWall(int mapData[kMapHeight][kMapWidth]) {
 //	}
 //}
 
-void Player::isLeftWall(int mapData[kMapHeight][kMapWidth]) {
+// --- 左壁判定 ---
+void Player::isLeftWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	float leftX = status_.pos.x;
 	float topY = status_.pos.y;
 	float bottomY = status_.pos.y + status_.height;
@@ -365,10 +367,10 @@ void Player::isLeftWall(int mapData[kMapHeight][kMapWidth]) {
 
 	bool collision = false;
 	if (tileTopY >= 0 && tileTopY < kMapHeight) {
-		if (mapData[tileTopY][tileLeftX] != 0) collision = true;
+		if (mapData[tileTopY][tileLeftX] == mapId) collision = true;
 	}
 	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
-		if (mapData[tileBottomY][tileLeftX] != 0) collision = true;
+		if (mapData[tileBottomY][tileLeftX] == mapId) collision = true;
 	}
 
 	if (collision) {
@@ -376,7 +378,8 @@ void Player::isLeftWall(int mapData[kMapHeight][kMapWidth]) {
 	}
 }
 
-void Player::isTopWall(int mapData[kMapHeight][kMapWidth]) {
+// --- 天井判定 ---
+void Player::isTopWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	// 画面外（上）にいるときは、そもそもマップチップ判定をしない
 	if (status_.pos.y < 0) return; 
 
@@ -394,10 +397,10 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth]) {
 			// X方向の範囲チェック
 			bool collision = false;
 			if (tileLeftX >= 0 && tileLeftX < kMapWidth) {
-				if (mapData[tileTopY][tileLeftX] != 0) collision = true;
+				if (mapData[tileTopY][tileLeftX] == mapId) collision = true;
 			}
 			if (tileRightX >= 0 && tileRightX < kMapWidth) {
-				if (mapData[tileTopY][tileRightX] != 0) collision = true;
+				if (mapData[tileTopY][tileRightX] == mapId) collision = true;
 			}
 
 			if (collision) {
@@ -408,7 +411,6 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth]) {
 		}
 	}
 }
-
 
 #pragma endregion
 
