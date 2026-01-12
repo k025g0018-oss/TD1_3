@@ -4,6 +4,14 @@
 #include "Command.h" 
 #include <vector>
 #include "Router.h"
+
+enum TileType {
+	NONE = 0,
+	BLOCK = 1,
+	HALF_FLOOR = 2,
+	ROUTER = 3
+};
+
 class Player
 {
 
@@ -64,10 +72,10 @@ private:
 	bool IsCliffAhead(int mapData[kMapHeight][kMapWidth]);
 
 	// マップの当たり判定関数
-	void isGrounded(int mapData[kMapHeight][kMapWidth]);
-	void isRightWall(int mapData[kMapHeight][kMapWidth]);
-	void isLeftWall(int mapData[kMapHeight][kMapWidth]);
-	void isTopWall(int mapData[kMapHeight][kMapWidth]);
+	void isGrounded(int mapData[kMapHeight][kMapWidth],int mapId);
+	void isRightWall(int mapData[kMapHeight][kMapWidth], int mapId);
+	void isLeftWall(int mapData[kMapHeight][kMapWidth], int mapId);
+	void isTopWall(int mapData[kMapHeight][kMapWidth], int mapId);
 
 	// コマンド実行時のインデックス
 	int cmdIndex;
