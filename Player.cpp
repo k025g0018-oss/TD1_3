@@ -258,32 +258,41 @@ bool Player::IsCliffAhead(int mapData[kMapHeight][kMapWidth]) {
 
 // --- 接地判定 ---
 void Player::isGrounded(int mapData[kMapHeight][kMapWidth], int mapId) {
-	// 下方向に移動していないなら判定不要
 	if (status_.Velocity.y <= 0) return;
+
 	float leftX = status_.pos.x;
 	float rightX = status_.pos.x + status_.width;
 	float bottomY = status_.pos.y + status_.height;
 
-	// 通常のタイルインデックス（mapDataを参照するための番号）
 	int tileLeftX = (int)(leftX / kTileSize);
 	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
 	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
 
-	// Y軸の範囲チェック
-	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
-		bool collision = false;
-		if (tileLeftX >= 0 && tileLeftX < kMapWidth) {
-			// != 0 ではなく mapId と比較する
-			if (mapData[tileBottomY][tileLeftX] == mapId) collision = true;
-		}
-		if (tileRightX >= 0 && tileRightX < kMapWidth) {
-			if (mapData[tileBottomY][tileRightX] == mapId) collision = true;
-		}
+	if (tileBottomY < 0 || tileBottomY >= kMapHeight) return;
 
-		if (collision) {
+	if (mapId == BLOCK) {
+		if ((tileLeftX >= 0 && tileLeftX < kMapWidth && mapData[tileBottomY][tileLeftX] == BLOCK) ||
+			(tileRightX >= 0 && tileRightX < kMapWidth && mapData[tileBottomY][tileRightX] == BLOCK)) {
 			status_.pos.y = (float)(tileBottomY * kTileSize) - status_.height;
 			status_.Velocity.y = 0;
 			status_.isJumop = false;
+		}
+	}
+	else if (mapId == HALF_FLOOR) {
+		int checkX[] = { tileLeftX, tileRightX };
+		for (int tx : checkX) {
+			if (tx >= 0 && tx < kMapWidth && mapData[tileBottomY][tx] == HALF_FLOOR) {
+				float tLeft = (float)(tx * kTileSize);
+				float tCenter = tLeft + (kTileSize / 2.0f);
+				// プレイヤーの足がタイルの左半分（実体）に乗っているか
+				if (rightX > tLeft && leftX < tCenter) {
+					float floorY = (float)(tileBottomY * kTileSize);
+					status_.pos.y = floorY - status_.height;
+					status_.Velocity.y = 0;
+					status_.isJumop = false;
+					return;
+				}
+			}
 		}
 	}
 }
@@ -311,28 +320,31 @@ void Player::isGrounded(int mapData[kMapHeight][kMapWidth], int mapId) {
 // --- 右壁判定 ---
 void Player::isRightWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	float rightX = status_.pos.x + status_.width;
-	float topY = status_.pos.y;
-	float bottomY = status_.pos.y + status_.height;
+	int tileRightX = (int)((rightX - 0.05f) / kTileSize); // 判定精度を微調整
+	int tileTopY = (int)(status_.pos.y / kTileSize);
+	int tileBottomY = (int)((status_.pos.y + status_.height - 0.1f) / kTileSize);
 
-	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
-	int tileTopY = (int)(topY / kTileSize);
-	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
-
-	// X軸が範囲外なら判定しない
 	if (tileRightX < 0 || tileRightX >= kMapWidth) return;
 
-	bool collision = false;
-	// 上端の判定（Y範囲チェック込）
-	if (tileTopY >= 0 && tileTopY < kMapHeight) {
-		if (mapData[tileTopY][tileRightX] == mapId) collision = true;
-	}
-	// 下端の判定（Y範囲チェック込）
-	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
-		if (mapData[tileBottomY][tileRightX] == mapId) collision = true;
-	}
+	for (int ty = tileTopY; ty <= tileBottomY; ty++) {
+		if (ty < 0 || ty >= kMapHeight) continue;
 
-	if (collision) {
-		status_.pos.x = (float)(tileRightX * kTileSize) - status_.width;
+		int tileType = mapData[ty][tileRightX];
+		if (tileType == mapId) {
+			if (mapId == BLOCK) {
+				status_.pos.x = (float)(tileRightX * kTileSize) - status_.width;
+				return;
+			}
+			else if (mapId == HALF_FLOOR) {
+				// ハーフブロック（左半分）の場合、右から「空洞部分」に入ることがある
+				// しかし、実体（タイルの左端）に右端が触れたら止める必要がある
+				float tileLeftEdge = (float)(tileRightX * kTileSize);
+				if (rightX > tileLeftEdge) {
+					status_.pos.x = tileLeftEdge - status_.width;
+					return;
+				}
+			}
+		}
 	}
 }
 
@@ -355,33 +367,36 @@ void Player::isRightWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 // --- 左壁判定 ---
 void Player::isLeftWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	float leftX = status_.pos.x;
-	float topY = status_.pos.y;
-	float bottomY = status_.pos.y + status_.height;
-
 	int tileLeftX = (int)(leftX / kTileSize);
-	int tileTopY = (int)(topY / kTileSize);
-	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
+	int tileTopY = (int)(status_.pos.y / kTileSize);
+	int tileBottomY = (int)((status_.pos.y + status_.height - 0.1f) / kTileSize);
 
-	// X軸が範囲外なら判定しない
 	if (tileLeftX < 0 || tileLeftX >= kMapWidth) return;
 
-	bool collision = false;
-	if (tileTopY >= 0 && tileTopY < kMapHeight) {
-		if (mapData[tileTopY][tileLeftX] == mapId) collision = true;
-	}
-	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
-		if (mapData[tileBottomY][tileLeftX] == mapId) collision = true;
-	}
+	for (int ty = tileTopY; ty <= tileBottomY; ty++) {
+		if (ty < 0 || ty >= kMapHeight) continue;
 
-	if (collision) {
-		status_.pos.x = (float)((tileLeftX + 1) * kTileSize);
+		int tileType = mapData[ty][tileLeftX];
+		if (tileType == mapId) {
+			if (mapId == BLOCK) {
+				status_.pos.x = (float)((tileLeftX + 1) * kTileSize);
+				return;
+			}
+			else if (mapId == HALF_FLOOR) {
+				// ハーフブロック（左半分）の実体右端は「タイルの真ん中」
+				float tileCenterX = (float)(tileLeftX * kTileSize) + (kTileSize / 2.0f);
+				if (leftX < tileCenterX) {
+					status_.pos.x = tileCenterX;
+					return;
+				}
+			}
+		}
 	}
 }
 
 // --- 天井判定 ---
 void Player::isTopWall(int mapData[kMapHeight][kMapWidth], int mapId) {
-	// 画面外（上）にいるときは、そもそもマップチップ判定をしない
-	if (status_.pos.y < 0) return; 
+	if (status_.Velocity.y >= 0) return;
 
 	float leftX = status_.pos.x;
 	float rightX = status_.pos.x + status_.width;
@@ -391,22 +406,26 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
 	int tileTopY = (int)(topY / kTileSize);
 
-	// 範囲チェック：タイル番号が有効な場合のみチップ判定
-	if (tileTopY >= 0 && tileTopY < kMapHeight) {
-		if (status_.Velocity.y < 0) {
-			// X方向の範囲チェック
-			bool collision = false;
-			if (tileLeftX >= 0 && tileLeftX < kMapWidth) {
-				if (mapData[tileTopY][tileLeftX] == mapId) collision = true;
-			}
-			if (tileRightX >= 0 && tileRightX < kMapWidth) {
-				if (mapData[tileTopY][tileRightX] == mapId) collision = true;
-			}
+	if (tileTopY < 0 || tileTopY >= kMapHeight) return;
 
-			if (collision) {
-				status_.pos.y = (float)((tileTopY + 1) * kTileSize);
-				status_.Velocity.y = 0;
-
+	if (mapId == BLOCK) {
+		if ((tileLeftX >= 0 && tileLeftX < kMapWidth && mapData[tileTopY][tileLeftX] == BLOCK) ||
+			(tileRightX >= 0 && tileRightX < kMapWidth && mapData[tileTopY][tileRightX] == BLOCK)) {
+			status_.pos.y = (float)((tileTopY + 1) * kTileSize);
+			status_.Velocity.y = 0;
+		}
+	}
+	else if (mapId == HALF_FLOOR) {
+		int checkX[] = { tileLeftX, tileRightX };
+		for (int tx : checkX) {
+			if (tx >= 0 && tx < kMapWidth && mapData[tileTopY][tx] == HALF_FLOOR) {
+				float tLeft = (float)(tx * kTileSize);
+				float tCenter = tLeft + (kTileSize / 2.0f);
+				if (rightX > tLeft && leftX < tCenter) {
+					status_.pos.y = (float)((tileTopY + 1) * kTileSize);
+					status_.Velocity.y = 0;
+					return;
+				}
 			}
 		}
 	}
