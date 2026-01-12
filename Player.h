@@ -48,7 +48,7 @@ public:
 	void UpdatePlayer(char keys[256], char preKeys[256], int  mapData[kMapHeight][kMapWidth]);
 	// コマンドで動かせる
 	void UpdateByCommands(const std::vector<CommandType>& commands, int mapData[kMapHeight][kMapWidth]);
-	void DrawPlayer();
+	void DrawPlayer(Vector2 offset);
 
 	// 今どのコマンドを実行中か
 	int GetCurrentCommandIndex() const { return cmdIndex; }

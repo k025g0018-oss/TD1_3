@@ -2,6 +2,7 @@
 #include <Novice.h>
 #include <fstream>
 #include "json.hpp" 
+#include "Vector2.h"
 
 using json = nlohmann::json;
 
@@ -80,7 +81,7 @@ void Map::LoadMapFromLDtk(const char* fileName, const std::vector<std::string>& 
 	}
 }
 
-void Map::Draw() {
+void Map::Draw(Vector2 offset) {
 	for (int y = 0; y < kMapHeight; y++) {
 		for (int x = 0; x < kMapWidth; x++) {
 
@@ -88,7 +89,7 @@ void Map::Draw() {
 			if (id > 0 && id < kMaxBlocksType && blockTextures[id] != 0) {
 
 				Novice::DrawSprite(
-					x * kTileSize, y * kTileSize,
+					(int)(x * kTileSize - offset.x), (int)(y * kTileSize - offset.y),
 					blockTextures[id], 
 					1.0f, 1.0f, 0.0f, 0xFFFFFFFF
 				);
@@ -99,7 +100,7 @@ void Map::Draw() {
 			
 				Novice::DrawBox(
 
-					x * kTileSize, y * kTileSize,
+					(int)(x * kTileSize - offset.x), (int)(y * kTileSize - offset.y),
 					kTileSize, kTileSize,
 					0.0f,
 					RED,
@@ -110,5 +111,8 @@ void Map::Draw() {
 			}
 
 		}
+
+		// Map.cpp の Draw内に追加してデバッグ
+		Novice::ScreenPrintf(0, 100, "MapData[10][10]: %d", mapData[10][10]);
 	}
 }

@@ -57,11 +57,11 @@ void Router::UpdateRouter(int mapData[kMapHeight][kMapWidth]) {
 	}
 }
 
-void Router::DrawRouter() {
+void Router::DrawRouter(Vector2 offset) {
 	//ルーターのデバック表示
 
 	Novice::DrawEllipse(
-		(int)router_.pos.x, (int)router_.pos.y,
+		(int)(router_.pos.x - offset.x), (int)(router_.pos.y - offset.y),
 		(int)router_.bigRadius, (int)router_.bigRadius,
 		0.0f,
 		0xFF00FF0f,
@@ -69,7 +69,7 @@ void Router::DrawRouter() {
 	);
 
 	Novice::DrawEllipse(
-		(int)router_.pos.x, (int)router_.pos.y,
+		(int)(router_.pos.x - offset.x), (int)(router_.pos.y - offset.y),
 		(int)router_.radius, (int)router_.radius,
 		0.0f,
 		0xFFFFFF10,
