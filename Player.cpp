@@ -10,23 +10,23 @@ Player::Player() {
 void Player::InitPlayer() {
 	status_.pos.x = 300.0f;
 	status_.pos.y = 300.0f;
-	
+
 	//加速度計
 	status_.acceleration.x = 0.0f;
 	status_.acceleration.y = 0.0f;
 	status_.Velocity.x = 0.0f;
 	status_.Velocity.y = +9.8f;
 	status_.Speed = 5.0f;
-	
+
 	//スケール
 	status_.scale.x = 64.0f;
 	status_.scale.y = 64.0f;
-	
+
 	status_.isActive = true;
 	status_.isJumop = false;
 	status_.jumpPower = 20.0f;
 	status_.radius = 64.0f;
-	
+
 	//幅高さ
 	status_.height = 64.0f;
 	status_.width = 64.0f;
@@ -34,7 +34,7 @@ void Player::InitPlayer() {
 	//自由に動けるかの確認
 	status_.isMoveFree = true;
 	status_.isCommandMove = true;
-	
+
 	cmdIndex = 0;
 
 }
@@ -107,15 +107,17 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 		status_.pos.x += status_.Speed;
 	}
 
-	isRightWall(mapData);
-	isLeftWall(mapData);
+	isRightWall(mapData, BLOCK);
+	isLeftWall(mapData, BLOCK);
 
 
 	Gravity();//重力処理
 
 	//下のタイルの座標系さんと当たり判定
-	isGrounded(mapData);
-	isTopWall(mapData);
+	isGrounded(mapData, BLOCK);//通常の地面判定
+	isGrounded(mapData, HALF_FLOOR);  // ★ハーフ床の地面もチェック！
+
+	isTopWall(mapData, BLOCK);
 }
 
 
@@ -160,15 +162,26 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
 			status_.pos.x -= status_.Speed;
 		}
 	}
-	isRightWall(mapData);
-	isLeftWall(mapData);
+	isRightWall(mapData, BLOCK);
+	isRightWall(mapData, HALF_FLOOR);//ハーフブロック判定
+
+	isLeftWall(mapData, BLOCK);
+	isLeftWall(mapData, HALF_FLOOR);
+	//いまは左から当たるときは同じ処理なので特に変化なし
+
 	Gravity();
+
 	//下のタイルの座標系さんと当たり判定
 	if (status_.pos.y >= 1080 - status_.height) {
 		status_.pos.y = 0;
 	}
-	isGrounded(mapData);
-	isTopWall(mapData);
+
+	isGrounded(mapData, BLOCK);
+	isGrounded(mapData, HALF_FLOOR);  // ★ハーフ床の地面もチェック！
+
+
+	isTopWall(mapData, BLOCK);
+	isTopWall(mapData, HALF_FLOOR);//ハーフブロック判定
 
 }
 
@@ -222,9 +235,6 @@ bool Player::IsCliffAhead(int mapData[kMapHeight][kMapWidth]) {
 //マップチップの当たり判定関数
 #pragma region マップの当たり判定関数
 
-
-
-
 //void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
 //	//足元にマップがあるかの確認
 //	// 左右の当たり判定と補正
@@ -249,11 +259,11 @@ bool Player::IsCliffAhead(int mapData[kMapHeight][kMapWidth]) {
 void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
 	// 下方向に移動していないなら判定不要
 	if (status_.Velocity.y <= 0) return;
-
 	float leftX = status_.pos.x;
 	float rightX = status_.pos.x + status_.width;
 	float bottomY = status_.pos.y + status_.height;
 
+	// 通常のタイルインデックス（mapDataを参照するための番号）
 	int tileLeftX = (int)(leftX / kTileSize);
 	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
 	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
@@ -393,6 +403,7 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth]) {
 			if (collision) {
 				status_.pos.y = (float)((tileTopY + 1) * kTileSize);
 				status_.Velocity.y = 0;
+
 			}
 		}
 	}
@@ -400,6 +411,7 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth]) {
 
 
 #pragma endregion
+
 
 void Player::CheckRouter(Router* router[], int count) {
 	// ★1. まずは「圏外」のデフォルト状態にする
