@@ -16,7 +16,6 @@ public:
 
 private:
 	Vector2 offset_; // 描画をずらす量
-	const float kScreenWidth = 1400.0f; // ゲーム画面の横幅
-	const float kWorldWidth = 1980.0f;  // 全体の横幅
+	const float kScreenWidth = 1400.0f; // ゲーム画面（表示領域）の幅
 };
 
