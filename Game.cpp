@@ -10,15 +10,19 @@
 Game::Game() {
 	player = new Player();
 	map = new Map();
+	scrollCamera = new ScrollCamera(); // スクロールちゃん
+	for (int i = 0; i < 250; i++) {
+		router[i] = new Router(i, map->mapData);
+	}
 	Initialize();
 }
 
 Game::~Game() {
 	delete player;
 	delete map;
-	for (int i = 0; i < routerCount; ++i) {
+	delete scrollCamera;
+	for (int i = 0; i < 250; i++) {
 		delete router[i];
-		router[i] = nullptr;
 	}
 }
 
@@ -91,6 +95,7 @@ void Game::Update(char keys[256], char preKeys[256]) {
 		// --- 実行モード ---
 		player->UpdateByCommands(commandList, map->mapData);
 		player->CheckRouter(router, 250);
+
 		// ストップボタン判定
 		if (isClick) {
 			if (mouseX >= btnReset.x && mouseX <= btnReset.x + btnReset.w &&
@@ -139,31 +144,43 @@ void Game::Update(char keys[256], char preKeys[256]) {
 		}
 	}
 
+	// スクロールカメラ
+	// プレイヤーの座標を渡してカメラを更新
+	scrollCamera->Update(player->status_.pos);
+
 }
 
 void Game::Draw() {
-	// --- 背景 ---
+	// カメラのオフセットを取得(スクロールで必要)
+	Vector2 offset = scrollCamera->GetOffset();
+
+	// --- ゲーム画面 ---
+
+	// 背景
 	Novice::DrawBox((int)gameArea.x, (int)gameArea.y, (int)gameArea.w, (int)gameArea.h, 0.0f, 0x000000FF, kFillModeSolid);
 
 	// パレットエリア背景
 	Novice::DrawBox((int)paletteArea.x, (int)paletteArea.y, (int)paletteArea.w, (int)paletteArea.h, 0.0f, 0x333333FF, kFillModeSolid);
+
 	// プログラムエリア背景
 	Novice::DrawBox((int)programArea.x, (int)programArea.y, (int)programArea.w, (int)programArea.h, 0.0f, 0x222222FF, kFillModeSolid);
 
 	// 区切り線
 	Novice::DrawBox(1400, 398, 580, 4, 0.0f, WHITE, kFillModeSolid);
 
+	// ルーター描画
 	for (int i = 0; i < routerCount; i++) {
 		if (router[i] != nullptr) {
-			router[i]->DrawRouter(); // Routerクラスにある描画関数を呼ぶ
+			router[i]->DrawRouter(offset); // Routerクラスにある描画関数を呼ぶ
 		}
 	}
 
-	// --- ゲーム画面 ---
-	player->DrawPlayer();
-	map->Draw();
+	// マップ描画
+	map->Draw(offset);
 
-
+	// プレイヤー描画
+	player->DrawPlayer(offset);
+	
 	// --- UIボタン描画 ---
 	auto DrawBtn = [](Button& b) {
 		Novice::DrawBox((int)b.x, (int)b.y, (int)b.w, (int)b.h, 0.0f, b.color, kFillModeSolid);
@@ -243,5 +260,6 @@ void Game::Draw() {
 	Novice::GetMousePosition(&mx, &my);
 	Novice::ScreenPrintf(0, 0, "Mouse: %d, %d", mx, my);
 	Novice::ScreenPrintf(0, 20, "BtnRight X: %d", (int)btnRight.x);
+	Novice::ScreenPrintf(0, 80, "player Pos X: %.2f", player->status_.pos.x);
 
 }

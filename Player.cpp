@@ -123,10 +123,14 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 
 
 
-void Player::DrawPlayer() {
-	Novice::DrawBox(static_cast<int>(status_.pos.x), static_cast<int>(status_.pos.y),
-		static_cast<int>(status_.scale.x), static_cast<int>(status_.scale.y),
-		0.0f, WHITE, kFillModeSolid);
+void Player::DrawPlayer(Vector2 offset) {
+	Novice::DrawBox(
+		static_cast<int>(status_.pos.x - offset.x), 
+		static_cast<int>(status_.pos.y - offset.y),
+		static_cast<int>(status_.scale.x), 
+		static_cast<int>(status_.scale.y),
+		0.0f, WHITE, kFillModeSolid
+	);
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -221,20 +225,52 @@ bool Player::IsCliffAhead(int mapData[kMapHeight][kMapWidth]) {
 
 
 
+//void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
+//	//足元にマップがあるかの確認
+//	// 左右の当たり判定と補正
+//	float leftX = status_.pos.x;
+//	float rightX = status_.pos.x + status_.width;
+//	float bottomY = status_.pos.y + status_.height;
+//
+//	int tileLeftX = (int)(leftX / kTileSize);
+//	int tileRightX = (int)((rightX - 0.1f) / kTileSize); // 0.1f引いて右端ギリギリを判定
+//	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
+//
+//	// 下方向（床）の判定
+//	if (status_.Velocity.y > 0) {
+//		if (mapData[tileBottomY][tileLeftX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
+//			status_.pos.y = (float)(tileBottomY * kTileSize) - status_.height;
+//			status_.Velocity.y = 0;
+//			status_.isJumop = false;
+//		}
+//	}
+//}
+
 void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
-	//足元にマップがあるかの確認
-	// 左右の当たり判定と補正
+	// 下方向に移動していないなら判定不要
+	if (status_.Velocity.y <= 0) return;
+
 	float leftX = status_.pos.x;
 	float rightX = status_.pos.x + status_.width;
 	float bottomY = status_.pos.y + status_.height;
 
 	int tileLeftX = (int)(leftX / kTileSize);
-	int tileRightX = (int)((rightX - 0.1f) / kTileSize); // 0.1f引いて右端ギリギリを判定
+	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
 	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
 
-	// 下方向（床）の判定
-	if (status_.Velocity.y > 0) {
-		if (mapData[tileBottomY][tileLeftX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
+	// Y軸の範囲チェック
+	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
+		bool collision = false;
+		// X軸の範囲チェック（左側）
+		if (tileLeftX >= 0 && tileLeftX < kMapWidth) {
+			if (mapData[tileBottomY][tileLeftX] != 0) collision = true;
+		}
+		// X軸の範囲チェック（右側）
+		if (tileRightX >= 0 && tileRightX < kMapWidth) {
+			if (mapData[tileBottomY][tileRightX] != 0) collision = true;
+		}
+
+		if (collision) {
 			status_.pos.y = (float)(tileBottomY * kTileSize) - status_.height;
 			status_.Velocity.y = 0;
 			status_.isJumop = false;
@@ -243,25 +279,68 @@ void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
 }
 
 //右壁の当たり判定
+//void Player::isRightWall(int mapData[kMapHeight][kMapWidth]) {
+//	float rightX = status_.pos.x + status_.width;
+//	float topY = status_.pos.y;
+//	float bottomY = status_.pos.y + status_.height;
+//
+//	// 座標から右側にあるタイル番号を算出
+//	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
+//	int tileTopY = (int)(topY / kTileSize);
+//	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
+//
+//	// 壁（0以外）に当たっていたら
+//	if (mapData[tileTopY][tileRightX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
+//		// 【修正点】
+//		// tileRightX * kTileSize は「壁の左端」の座標です。
+//		// そこから「プレイヤーの横幅」を引いた位置が、正しい停止位置になります。
+//		status_.pos.x = (float)(tileRightX * kTileSize) - status_.width;
+//	}
+//}
+
 void Player::isRightWall(int mapData[kMapHeight][kMapWidth]) {
 	float rightX = status_.pos.x + status_.width;
 	float topY = status_.pos.y;
 	float bottomY = status_.pos.y + status_.height;
 
-	// 座標から右側にあるタイル番号を算出
 	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
 	int tileTopY = (int)(topY / kTileSize);
 	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
 
-	// 壁（0以外）に当たっていたら
-	if (mapData[tileTopY][tileRightX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
-		// 【修正点】
-		// tileRightX * kTileSize は「壁の左端」の座標です。
-		// そこから「プレイヤーの横幅」を引いた位置が、正しい停止位置になります。
+	// X軸が範囲外なら判定しない
+	if (tileRightX < 0 || tileRightX >= kMapWidth) return;
+
+	bool collision = false;
+	// 上端の判定（Y範囲チェック込）
+	if (tileTopY >= 0 && tileTopY < kMapHeight) {
+		if (mapData[tileTopY][tileRightX] != 0) collision = true;
+	}
+	// 下端の判定（Y範囲チェック込）
+	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
+		if (mapData[tileBottomY][tileRightX] != 0) collision = true;
+	}
+
+	if (collision) {
 		status_.pos.x = (float)(tileRightX * kTileSize) - status_.width;
 	}
 }
+
 //左壁の当たり判定
+//void Player::isLeftWall(int mapData[kMapHeight][kMapWidth]) {
+//	float leftX = status_.pos.x;
+//	float topY = status_.pos.y;
+//	float bottomY = status_.pos.y + status_.height;
+//
+//	int tileLeftX = (int)(leftX / kTileSize);
+//	int tileTopY = (int)(topY / kTileSize);
+//	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
+//
+//	if (mapData[tileTopY][tileLeftX] != 0 || mapData[tileBottomY][tileLeftX] != 0) {
+//		// 【修正点】左に押し出すのではなく、タイルの右側（+1）へ押し戻す
+//		status_.pos.x = (float)((tileLeftX + 1) * kTileSize);
+//	}
+//}
+
 void Player::isLeftWall(int mapData[kMapHeight][kMapWidth]) {
 	float leftX = status_.pos.x;
 	float topY = status_.pos.y;
@@ -271,35 +350,50 @@ void Player::isLeftWall(int mapData[kMapHeight][kMapWidth]) {
 	int tileTopY = (int)(topY / kTileSize);
 	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
 
-	if (mapData[tileTopY][tileLeftX] != 0 || mapData[tileBottomY][tileLeftX] != 0) {
-		// 【修正点】左に押し出すのではなく、タイルの右側（+1）へ押し戻す
+	// X軸が範囲外なら判定しない
+	if (tileLeftX < 0 || tileLeftX >= kMapWidth) return;
+
+	bool collision = false;
+	if (tileTopY >= 0 && tileTopY < kMapHeight) {
+		if (mapData[tileTopY][tileLeftX] != 0) collision = true;
+	}
+	if (tileBottomY >= 0 && tileBottomY < kMapHeight) {
+		if (mapData[tileBottomY][tileLeftX] != 0) collision = true;
+	}
+
+	if (collision) {
 		status_.pos.x = (float)((tileLeftX + 1) * kTileSize);
 	}
 }
 
 void Player::isTopWall(int mapData[kMapHeight][kMapWidth]) {
+	// 画面外（上）にいるときは、そもそもマップチップ判定をしない
+	if (status_.pos.y < 0) return; 
 
-	// プレイヤーの左右端と上端の座標
 	float leftX = status_.pos.x;
 	float rightX = status_.pos.x + status_.width;
 	float topY = status_.pos.y;
 
-	// 座標からタイル番号を算出
 	int tileLeftX = (int)(leftX / kTileSize);
-	int tileRightX = (int)((rightX - 0.1f) / kTileSize); // 右端ギリギリを判定
+	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
 	int tileTopY = (int)(topY / kTileSize);
 
-	// 上方向（頭上）の判定：上昇中（Velocity.y < 0）のみチェック
-	if (status_.Velocity.y < 0) {
-		// 頭上の左端または右端にタイル（0以外）があるか
-		if (mapData[tileTopY][tileLeftX] != 0 || mapData[tileTopY][tileRightX] != 0) {
+	// 範囲チェック：タイル番号が有効な場合のみチップ判定
+	if (tileTopY >= 0 && tileTopY < kMapHeight) {
+		if (status_.Velocity.y < 0) {
+			// X方向の範囲チェック
+			bool collision = false;
+			if (tileLeftX >= 0 && tileLeftX < kMapWidth) {
+				if (mapData[tileTopY][tileLeftX] != 0) collision = true;
+			}
+			if (tileRightX >= 0 && tileRightX < kMapWidth) {
+				if (mapData[tileTopY][tileRightX] != 0) collision = true;
+			}
 
-			// 【修正】位置をタイルの「下端」に押し戻す
-			// (tileTopY + 1) * kTileSize は、衝突したタイルの下のラインの座標
-			status_.pos.y = (float)((tileTopY + 1) * kTileSize);
-
-			// 上昇速度をゼロにする（頭をぶつけて止まる）
-			status_.Velocity.y = 0;
+			if (collision) {
+				status_.pos.y = (float)((tileTopY + 1) * kTileSize);
+				status_.Velocity.y = 0;
+			}
 		}
 	}
 }

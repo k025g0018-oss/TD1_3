@@ -19,7 +19,7 @@ public:
 	Router(int id, int mapData[kMapHeight][kMapWidth]);
 	void InitRouter(int id, int mapData[kMapHeight][kMapWidth]);
 	void UpdateRouter(int mapData[kMapHeight][kMapWidth]);
-	void DrawRouter();
+	void DrawRouter(Vector2 offset);
 	
 
 };

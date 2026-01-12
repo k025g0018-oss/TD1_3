@@ -12,6 +12,7 @@
 #include "SceneManager.h"
 #include "Game.h"
 #include "Router.h"
+#include "ScrollCamera.h"
 
 // (^▽^)/あ
 // (^▽^)/あ
@@ -44,23 +45,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// スクリーンモード
 	bool screenMode = false;
   
-	Player* player = new Player();
 	// ゲームシーンマネージャーを生成
 	SceneManager* sceneManager = new SceneManager();
 
-	Map* map = new Map();
-	//Game* game = new Game();
-
-
-	Router* router[250] = { 0 };
-	
-	player->InitPlayer();
-	map->LoadMapFromLDtk("./mapTest9999.ldtk",{"IntGrid","HalfBlock"});
 	//int textureBlock = Novice::LoadTexture("./block.png");
-
-	for (int i = 0; i < 250; i++) {
-		router[i] = new Router(i, map->mapData);
-	}
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -109,19 +97,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓描画処理ここから
 		///
 
-		//////////
-		/// 自機
-		//////////
-		
-		map->Draw(/*textureBlock*/);
+		//map->Draw();
 		
 		
 		//////////
 		/// デバッグ処理
 		//////////
-
-
-
 
 		///
 		/// ↑描画処理ここまで
@@ -139,13 +120,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 解放エクササイズ
 	delete sceneManager;
 
-	delete map;
-
-	delete player;
-
-	for (int i = 0; i < 250; i++) {
-		delete router[i];
-	}
 	// ライブラリの終了
 	Novice::Finalize();
 	return 0;
