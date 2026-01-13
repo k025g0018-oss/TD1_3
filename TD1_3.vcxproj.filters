@@ -107,6 +107,9 @@
     <ClCompile Include="Router.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Gimmick.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -230,5 +233,6 @@
     </ClInclude>
     <ClInclude Include="Command.h" />
     <ClInclude Include="Router.h" />
+    <ClInclude Include="Gimmick.h" />
   </ItemGroup>
 </Project>
