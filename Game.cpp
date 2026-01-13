@@ -64,18 +64,28 @@ void Game::Initialize() {
 	// ★パレットエリアにボタンを配置
 	float btnX = 1450;
 	float btnW = 400;
-	float btnH = 60;
+	float btnH = 50; // 少し高さを詰めたほうが入りやすいかも
 
-	btnRight = { btnX, 50,  btnW, btnH, ">> Move Right",    CommandType::MoveRight,      0x44AAFFFF }; // 青系
-	btnWallJump = { btnX, 130, btnW, btnH, "If Wall -> Jump",  CommandType::CheckWallJump,  (int)0xFFAA44FF }; // オレンジ系
-	btnCliffJump = { btnX, 210, btnW, btnH, "If Air -> Jump", CommandType::CheckCliffJump, (int)0xFFAA44FF }; // オレンジ系
-
+	// 左・右・壁・崖 の順に並べる例
+	btnLeft = { btnX, 50,  btnW, btnH, "<< Move Left",     CommandType::MoveLeft,     0x44AAFFFF };
+	btnRight = { btnX, 110, btnW, btnH, ">> Move Right",    CommandType::MoveRight,    0x44AAFFFF };
+	btnWallJump = { btnX, 170, btnW, btnH, "If Wall -> Jump",  CommandType::CheckWallJump, (int)0xFFAA44FF };
+	btnCliffJump = { btnX, 230, btnW, btnH, "If Air -> Jump",   CommandType::CheckCliffJump,(int)0xFFAA44FF };
+	
 	// スタート・リセットボタン
 	btnStart = { 1450, 300, 180, 80, "START >", (CommandType)-1, (int)0xFF4444FF };
 	btnReset = { 1670, 300, 180, 80, "STOP []", (CommandType)-1, 0x44FF44FF };
 }
 
 void Game::Update(char keys[256], char preKeys[256]) {
+
+	// Rキーでリセット
+	if (keys[DIK_R] && !preKeys[DIK_R]) {
+		player->status_.pos.x = 300.0f;
+		player->status_.pos.y = 704.0f;
+		isRunning = false; // 実行中なら編集モードに戻す
+		cantStartCount = 0;
+	}
 
 	int mouseX, mouseY;
 	Novice::GetMousePosition(&mouseX, &mouseY);
@@ -87,13 +97,23 @@ void Game::Update(char keys[256], char preKeys[256]) {
 		}
 	}
 
+	if (cantStartCount > 0) {
+		cantStartCount--;
+	}
+
 	// ==========================================
 	// モード分岐
 	// ==========================================
 	if (isRunning) {
 		// --- 実行モード ---
-		player->UpdateByCommands(commandList, map->mapData);
 		player->CheckRouter(router, 250);
+		bool isArrived = player->CheckRouter(router,250);
+
+		if (isArrived) {
+			isRunning = false; 
+		} else {
+			player->UpdateByCommands(commandList, map->mapData);
+		}
 
 		// ストップボタン判定
 		if (isClick) {
@@ -103,17 +123,24 @@ void Game::Update(char keys[256], char preKeys[256]) {
 				player->InitPlayer();
 			}
 		}
+	
 	}
 	else {
 		// --- 編集モード ---
 		player->UpdatePlayer(keys, preKeys, map->mapData);
-		player->CheckRouter(router, 250);
+		//player->CheckRouter(router, 250);
+		bool isInsideRouter = player->CheckRouter(router, 250);
 
 		if (isClick) {
 			// 1. パレットのボタンを押してコマンドを追加
 			if (mouseX >= btnRight.x && mouseX <= btnRight.x + btnRight.w && mouseY >= btnRight.y && mouseY <= btnRight.y + btnRight.h) {
 				commandList.push_back(btnRight.cmdType);
 			}
+
+			if (mouseX >= btnLeft.x && mouseX <= btnLeft.x + btnLeft.w && mouseY >= btnLeft.y && mouseY <= btnLeft.y + btnLeft.h) {
+				commandList.push_back(btnLeft.cmdType);
+			}
+
 			if (mouseX >= btnWallJump.x && mouseX <= btnWallJump.x + btnWallJump.w && mouseY >= btnWallJump.y && mouseY <= btnWallJump.y + btnWallJump.h) {
 				commandList.push_back(btnWallJump.cmdType);
 			}
@@ -121,12 +148,21 @@ void Game::Update(char keys[256], char preKeys[256]) {
 				commandList.push_back(btnCliffJump.cmdType);
 			}
 
+
 			// 2. スタートボタン
 			if (mouseX >= btnStart.x && mouseX <= btnStart.x + btnStart.w && mouseY >= btnStart.y && mouseY <= btnStart.y + btnStart.h) {
-				isRunning = true;
-				player->InitPlayer();
-			}
 
+				
+
+				if (!isInsideRouter) {
+					isRunning = true;
+					player->InitPlayer();
+					cantStartCount = 0;
+				} else {
+					// (オプション)「ここではスタートできません」みたいなログを出してもいいかも
+					cantStartCount = 60;
+				}
+			}
 			// 下の方に表示されているブロックほど、リストの後ろの方にある
 			float blockY = programArea.y + 50;
 			for (int i = 0; i < commandList.size(); i++) {
@@ -179,6 +215,11 @@ void Game::Draw() {
 
 	// プレイヤー描画
 	player->DrawPlayer(offset);
+
+	// 警告メッセージの表示
+	if (cantStartCount > 0) {
+		Novice::ScreenPrintf(800, 400, "Router Area! Can't Start!");
+	}
 	
 	// --- UIボタン描画 ---
 	auto DrawBtn = [](Button& b) {
@@ -187,6 +228,7 @@ void Game::Draw() {
 		};
 
 	DrawBtn(btnRight);
+	DrawBtn(btnLeft);
 	DrawBtn(btnWallJump);
 	DrawBtn(btnCliffJump);
 	DrawBtn(btnStart);
@@ -211,6 +253,10 @@ void Game::Draw() {
 		case CommandType::MoveRight:
 			color = 0x44AAFFFF; // 青
 			text = "Move Right";
+			break;
+		case CommandType::MoveLeft:
+			color = 0x44AAFFFF; // 青
+			text = "Move Left";
 			break;
 		case CommandType::CheckWallJump:
 			color = 0xFFAA44FF; // オレンジ

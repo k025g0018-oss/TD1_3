@@ -27,6 +27,7 @@ void Player::InitPlayer() {
 	status_.isJumop = false;
 	status_.jumpPower = 20.0f;
 	status_.radius = 64.0f;
+	status_.moveDir = 1.0f;
 
 	//幅高さ
 	status_.height = 64.0f;
@@ -49,7 +50,7 @@ void Player::UpdatePlayer(char keys[256], char preKeys[256], int  mapData[kMapHe
 
 // コマンドで動かせるプレイヤー
 void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapData[kMapHeight][kMapWidth]) {
-	if (!status_.isActive) return;
+
 
 	// まだ実行すべきコマンドが残っているか？
 	if (cmdIndex < commands.size()) {
@@ -58,16 +59,20 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 
 		switch (currentCmd) {
 
-			// ---------------------------------------------------
-			// 右へ進む：
-			// 「右へ動く力」を与えたら、即座に次のコマンドへ進む。
-			// 力は残り続けるので、結果として「ずっと右へ」になる。
-			// ---------------------------------------------------
+			/*--------------------------------------
+			右へ進む
+			-----------------------------*/
 		case CommandType::MoveRight:
-			status_.pos.x += status_.Speed;
+			status_.moveDir = 1.0f;
+			cmdIndex++; // コマンド完了（動き続けるので即次へ）
+			break;
 
+			/*---------------------------
+			左へ進む
+			---------------------------------*/
+		case CommandType::MoveLeft:
+			status_.moveDir = -1.0f;
 			cmdIndex++;
-
 			break;
 
 			// ---------------------------------------------------
@@ -105,7 +110,7 @@ void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapD
 	}
 	else {
 		// コマンドがなくなった後
-		status_.pos.x += status_.Speed;
+		status_.pos.x += status_.Speed * status_.moveDir;
 	}
 
 	isRightWall(mapData, BLOCK);
@@ -173,9 +178,6 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
 	Gravity();
 
 	//下のタイルの座標系さんと当たり判定
-	if (status_.pos.y >= 1080 - status_.height) {
-		status_.pos.y = 0;
-	}
 
 	isGrounded(mapData, BLOCK);
 	isGrounded(mapData, HALF_FLOOR);  // ★ハーフ床の地面もチェック！
@@ -209,8 +211,18 @@ void Player::ActionTryJump() {
 
 // 前に壁があるかチェック
 bool Player::IsWallAhead(int mapData[kMapHeight][kMapWidth]) {
-	// 自分の右端 + 5ピクセル先を見る
-	int checkX = (int)(status_.pos.x + status_.width + 5.0f) / kTileSize;
+
+	int checkX;
+
+	// ★右を向いているか、左を向いているかでチェック位置を変える
+	if (status_.moveDir > 0) {
+		// 右方向：自分の右端 + 5px
+		checkX = (int)(status_.pos.x + status_.width + 5.0f) / kTileSize;
+	} else {
+		// 左方向：自分の左端 - 5px
+		checkX = (int)(status_.pos.x - 5.0f) / kTileSize;
+	}
+
 	int checkY = (int)(status_.pos.y + status_.height / 2.0f) / kTileSize;
 
 	if (checkX >= 0 && checkX < kMapWidth && checkY >= 0 && checkY < kMapHeight) {
@@ -222,9 +234,13 @@ bool Player::IsWallAhead(int mapData[kMapHeight][kMapWidth]) {
 
 // 足元が崖かチェック
 bool Player::IsCliffAhead(int mapData[kMapHeight][kMapWidth]) {
-	// 自分の右端 + 5ピクセル先を見る
-	int checkX = (int)(status_.pos.x + status_.width + 5.0f) / kTileSize;
-	// 足元 + 5ピクセル下を見る
+	int checkX;
+	if (status_.moveDir > 0) {
+		checkX = (int)(status_.pos.x + status_.width + 5.0f) / kTileSize;
+	} else {
+		checkX = (int)(status_.pos.x - 5.0f) / kTileSize;
+	}
+
 	int checkY = (int)(status_.pos.y + status_.height + 5.0f) / kTileSize;
 
 	if (checkX >= 0 && checkX < kMapWidth && checkY >= 0 && checkY < kMapHeight) {
@@ -382,9 +398,12 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 #pragma endregion
 
 
-void Player::CheckRouter(Router* router[], int count) {
+bool Player::CheckRouter(Router* router[], int count) {
 	// ★1. まずは「圏外」のデフォルト状態にする
 	// 全てのルーターから外れているときは、動けないように設定
+
+	bool isArrived = false;
+
 	status_.isMoveFree = false;
 	status_.isCommandMove = false;
 
@@ -409,15 +428,20 @@ void Player::CheckRouter(Router* router[], int count) {
 		if (distSq <= r * r) {
 			status_.isMoveFree = true;
 			status_.isCommandMove = true;
-			return; // 最高の状態なので、これ以上他のルーターは見なくて良い
+
+			// ここで「到着フラグ」を立てる
+			isArrived = true;
+
+			break;
 		}
-		// ★4. 判定（外側の円：内側には入っていないが外側には入っている）
+		// ★外側の円（まだ到着してないけど、電波はある）
 		else if (distSq <= br * br) {
 			status_.isMoveFree = false;
 			status_.isCommandMove = true;
-			// 他のルーターでもっと良い条件（内側）があるかもしれないので、
-			// ここでは return せずにループを続けるか、
-			// 「最低でもコマンド移動はできる」というフラグだけ立てておく
+			// 到着はしていないので isArrived は false のまま
 		}
 	}
+
+	// ★結果を返す
+	return isArrived;
 }

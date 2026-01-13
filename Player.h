@@ -28,7 +28,7 @@ public:
 		float Speed;
 
 		Vector2 scale;//大きさ
-		Vector2 dir;//プレイヤーの向き
+		float moveDir;//プレイヤーの向き
 
 		float height;
 		float width;
@@ -37,6 +37,7 @@ public:
 		float jumpPower;//ジャンプ力
 		bool isJumop;//ジャンプフラグ
 		float radius;
+
 
 		bool isMoveFree;//自由に動けるかのフラグ
 		bool isCommandMove;//コマンドで動かす範囲
@@ -55,7 +56,7 @@ public:
 
 	//ルーターの通信範囲内でさらにその中でも自由に行動できるのかの関数
 	// 引数でルーターの配列を受け取るようにする
-	void CheckRouter(Router* router[], int count);
+	bool CheckRouter(Router* router[], int count);
 
 private:
 

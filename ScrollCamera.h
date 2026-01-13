@@ -29,6 +29,6 @@ private:
 	}; 
 
 	// プレイヤーを画面のどの高さに維持するか
-	float targetY_ = 600.0f;
+	float targetY_ = 800.0f;
 };
 

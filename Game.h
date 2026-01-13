@@ -73,6 +73,7 @@ private:
 
 	// 実行モードフラグ (true:実行中, false:編集・停止中)
 	bool isRunning;
+	int cantStartCount = 0;
 
 	// コマンドリスト
 	std::vector<CommandType> commandList;
@@ -80,6 +81,7 @@ private:
 
 	// ボタン類
 	Button btnRight;
+	Button btnLeft;
 	Button btnWallJump;
 	Button btnCliffJump;
 	Button btnStart;
