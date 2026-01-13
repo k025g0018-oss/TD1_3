@@ -4,17 +4,26 @@
 #include "Map.h"
 #include "Player.h"
 #include "ScrollCamera.h"
-
+#include "Router.h"
+#include "Router.h"
 
 Game::Game() {
 	player = new Player();
 	map = new Map();
+	scrollCamera = new ScrollCamera(); // スクロールちゃん
+	for (int i = 0; i < 250; i++) {
+		router[i] = new Router(i, map->mapData);
+	}
 	Initialize();
 }
 
 Game::~Game() {
 	delete player;
 	delete map;
+	delete scrollCamera;
+	for (int i = 0; i < 250; i++) {
+		delete router[i];
+	}
 }
 
 
@@ -30,13 +39,28 @@ void Game::Initialize() {
 
 	map->Initialize();
 
+	//ルーターの生成
+	routerCount = 0;
+
+
 	/*------------------------------
 	ここにレイヤー名をいれるんだ！！
 	-----------------------------*/
 	std::vector<std::string> layers = { "IntGrid","HalfBlock" };
 
-	map->LoadMapFromLDtk("./mapTest9999.ldtk",layers);
+	map->LoadMapFromLDtk("./mapTest9999.ldtk", layers);
 
+
+	for (int y = 0; y < kMapHeight; y++) {
+		for (int x = 0; x < kMapWidth; x++) {
+			if (map->mapData[y][x] == 3) { // 3をルーターとする
+				if (routerCount < 250) {
+					router[routerCount] = new Router(routerCount, map->mapData);
+					routerCount++;
+				}
+			}
+		}
+	}
 
 	// ★パレットエリアにボタンを配置
 	float btnX = 1450;
@@ -44,8 +68,8 @@ void Game::Initialize() {
 	float btnH = 60;
 
 	btnRight = { btnX, 50,  btnW, btnH, ">> Move Right",    CommandType::MoveRight,      0x44AAFFFF }; // 青系
-	btnWallJump = { btnX, 130, btnW, btnH, "?? Wall -> Jump",  CommandType::CheckWallJump,  (int)0xFFAA44FF }; // オレンジ系
-	btnCliffJump = { btnX, 210, btnW, btnH, "?? Cliff -> Jump", CommandType::CheckCliffJump, (int)0xFFAA44FF }; // オレンジ系
+	btnWallJump = { btnX, 130, btnW, btnH, "If Wall -> Jump",  CommandType::CheckWallJump,  (int)0xFFAA44FF }; // オレンジ系
+	btnCliffJump = { btnX, 210, btnW, btnH, "If Air -> Jump", CommandType::CheckCliffJump, (int)0xFFAA44FF }; // オレンジ系
 
 	// スタート・リセットボタン
 	btnStart = { 1450, 300, 180, 80, "START >", (CommandType)-1, (int)0xFF4444FF };
@@ -58,12 +82,19 @@ void Game::Update(char keys[256], char preKeys[256]) {
 	Novice::GetMousePosition(&mouseX, &mouseY);
 	bool isClick = Novice::IsTriggerMouse(0);
 
+	for (int i = 0; i < routerCount; i++) {
+		if (router[i] != nullptr) {
+			router[i]->UpdateRouter(mapData); // Routerクラスにある描画関数を呼ぶ
+		}
+	}
+
 	// ==========================================
 	// モード分岐
 	// ==========================================
 	if (isRunning) {
 		// --- 実行モード ---
 		player->UpdateByCommands(commandList, map->mapData);
+		player->CheckRouter(router, 250);
 
 		// ストップボタン判定
 		if (isClick) {
@@ -73,9 +104,11 @@ void Game::Update(char keys[256], char preKeys[256]) {
 				player->InitPlayer();
 			}
 		}
-	} else {
+	}
+	else {
 		// --- 編集モード ---
 		player->UpdatePlayer(keys, preKeys, map->mapData);
+		player->CheckRouter(router, 250);
 
 		if (isClick) {
 			// 1. パレットのボタンを押してコマンドを追加
@@ -104,33 +137,50 @@ void Game::Update(char keys[256], char preKeys[256]) {
 
 					// このコマンドを削除する
 					commandList.erase(commandList.begin() + i);
-					break; 
+					break;
 				}
 				blockY += 60; // 次のブロックの位置へ
 			}
 		}
 	}
 
+	// スクロールカメラ
+	// プレイヤーの座標を渡してカメラを更新
+	scrollCamera->Update(player->status_.pos);
+
 }
 
 void Game::Draw() {
-	// --- 背景 ---
+	// カメラのオフセットを取得(スクロールで必要)
+	Vector2 offset = scrollCamera->GetOffset();
+
+	// --- ゲーム画面 ---
+
+	// 背景
 	Novice::DrawBox((int)gameArea.x, (int)gameArea.y, (int)gameArea.w, (int)gameArea.h, 0.0f, 0x000000FF, kFillModeSolid);
 
 	// パレットエリア背景
 	Novice::DrawBox((int)paletteArea.x, (int)paletteArea.y, (int)paletteArea.w, (int)paletteArea.h, 0.0f, 0x333333FF, kFillModeSolid);
+
 	// プログラムエリア背景
 	Novice::DrawBox((int)programArea.x, (int)programArea.y, (int)programArea.w, (int)programArea.h, 0.0f, 0x222222FF, kFillModeSolid);
 
 	// 区切り線
 	Novice::DrawBox(1400, 398, 580, 4, 0.0f, WHITE, kFillModeSolid);
 
+	// ルーター描画
+	for (int i = 0; i < routerCount; i++) {
+		if (router[i] != nullptr) {
+			router[i]->DrawRouter(offset); // Routerクラスにある描画関数を呼ぶ
+		}
+	}
 
-	// --- ゲーム画面 ---
-	player->DrawPlayer();
-	map->Draw();
+	// マップ描画
+	map->Draw(offset);
 
-
+	// プレイヤー描画
+	player->DrawPlayer(offset);
+	
 	// --- UIボタン描画 ---
 	auto DrawBtn = [](Button& b) {
 		Novice::DrawBox((int)b.x, (int)b.y, (int)b.w, (int)b.h, 0.0f, b.color, kFillModeSolid);
@@ -169,7 +219,7 @@ void Game::Draw() {
 			break;
 		case CommandType::CheckCliffJump:
 			color = 0xFFAA44FF; // オレンジ
-			text = "If Cliff -> Jump";
+			text = "If Air -> Jump";
 			break;
 		}
 		// もし今実行しているコマンドなら、色を「赤」に変えて目立たせる！
@@ -201,7 +251,8 @@ void Game::Draw() {
 		Novice::ScreenPrintf(10, 10, "RUNNING...");
 		// 画面全体に枠を表示して実行中っぽくする
 		Novice::DrawBox(0, 0, 1400, 1080, 0.0f, 0xFF000044, kFillModeSolid);
-	} else {
+	}
+	else {
 		Novice::ScreenPrintf(10, 10, "EDIT MODE");
 	}
 
@@ -209,5 +260,7 @@ void Game::Draw() {
 	Novice::GetMousePosition(&mx, &my);
 	Novice::ScreenPrintf(0, 0, "Mouse: %d, %d", mx, my);
 	Novice::ScreenPrintf(0, 20, "BtnRight X: %d", (int)btnRight.x);
+	Novice::ScreenPrintf(0, 80, "player Pos X: %.2f", player->status_.pos.x);
+	Novice::ScreenPrintf(0, 110, "player Pos Y: %.2f", player->status_.pos.y);
 
 }

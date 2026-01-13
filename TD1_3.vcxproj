@@ -168,6 +168,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Router.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ScrollCamera.cpp" />
     <ClCompile Include="Setting.cpp" />
@@ -204,17 +205,15 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="C:\KamataEngine\DirectXGame\scene\GameScene.h" />
     <ClInclude Include="C:\KamataEngine\Adapter\Novice.h" />
     <ClInclude Include="Clear.h" />
-
     <ClInclude Include="Command.h" />
-
     <ClInclude Include="Collision.h" />
-
     <ClInclude Include="const.h" />
     <ClInclude Include="Credit.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Router.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ScrollCamera.h" />
     <ClInclude Include="Setting.h" />

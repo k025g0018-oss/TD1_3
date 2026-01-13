@@ -7,7 +7,7 @@
 #include <vector>
 #include "Map.h"
 #include "ScrollCamera.h"
-
+#include "Router.h"
 
 struct GameScreen {
 	Vector2 position;
@@ -52,6 +52,9 @@ private:
 
 	Player* player;
 	Map* map;
+
+	Router* router[250]; // ルーターの配列
+	int routerCount = 0;   // 実際にマップにあったルーターの数
 
 	ScrollCamera* scrollCamera;
 

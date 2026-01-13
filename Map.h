@@ -2,6 +2,7 @@
 #include "Const.h"
 #include <vector>
 #include <string>
+#include "Vector2.h"
 
 // 一応最大ブロック種類の定義
 const int kMaxBlocksType = 100;
@@ -24,5 +25,5 @@ public:
 	void LoadMapFromLDtk(const char* fileName,const std::vector<std::string>& layerName);
 
 	// 描画
-	void Draw();
+	void Draw(Vector2 offset);
 };

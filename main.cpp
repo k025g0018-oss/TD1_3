@@ -1,4 +1,4 @@
-#include <Novice.h>
+﻿#include <Novice.h>
 #define _USE_MATH_DEFINES
 #include <assert.h>
 #include "Map.h"
@@ -11,6 +11,8 @@
 #include "Vector2.h"
 #include "SceneManager.h"
 #include "Game.h"
+#include "Router.h"
+#include "ScrollCamera.h"
 
 // (^▽^)/あ
 // (^▽^)/あ
@@ -43,18 +45,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// スクリーンモード
 	bool screenMode = false;
   
-	Player* player = new Player();
 	// ゲームシーンマネージャーを生成
 	SceneManager* sceneManager = new SceneManager();
 
-	Map* map = new Map();
-	//Game* game = new Game();
-
-
-	player->InitPlayer();
-	map->LoadMapFromLDtk("./mapTest9999.ldtk",{"IntGrid","HalfBlock"});
 	//int textureBlock = Novice::LoadTexture("./block.png");
-
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -82,8 +76,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		} else {
 			Novice::SetWindowMode(kWindowed);
 		}
-		
-
+		/*for (int i = 0; i < 250; i++) {
+			router[i]->UpdateRouter(map->mapData);
+		}*/
 		//////////
 		/// 自機
 		//////////
@@ -102,20 +97,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/// ↓描画処理ここから
 		///
 
-		//////////
-		/// 自機
-		//////////
-
-		map->Draw();
-	
+		//map->Draw();
 		
 		
 		//////////
 		/// デバッグ処理
 		//////////
-
-
-
 
 		///
 		/// ↑描画処理ここまで
@@ -132,10 +119,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 解放エクササイズ
 	delete sceneManager;
-
-	delete map;
-
-	delete player;
 
 	// ライブラリの終了
 	Novice::Finalize();
