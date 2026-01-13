@@ -89,7 +89,8 @@ void Map::Draw(Vector2 offset) {
 			if (id > 0 && id < kMaxBlocksType && blockTextures[id] != 0) {
 
 				Novice::DrawSprite(
-					(int)(x * kTileSize - offset.x), (int)(y * kTileSize - offset.y),
+					(int)(x * kTileSize - offset.x),
+					(int)(y * kTileSize - offset.y),
 					blockTextures[id], 
 					1.0f, 1.0f, 0.0f, 0xFFFFFFFF
 				);
@@ -99,13 +100,12 @@ void Map::Draw(Vector2 offset) {
 			if (mapData[y][x] == 3) {
 			
 				Novice::DrawBox(
-
-					(int)(x * kTileSize - offset.x), (int)(y * kTileSize - offset.y),
+					(int)(x * kTileSize - offset.x), 
+					(int)(y * kTileSize - offset.y),
 					kTileSize, kTileSize,
 					0.0f,
 					RED,
 					kFillModeSolid
-
 				);
 
 			}
