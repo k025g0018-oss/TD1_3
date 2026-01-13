@@ -56,6 +56,7 @@ void Game::Initialize() {
 				if (routerCount < 250) {
 					router[routerCount] = new Router(routerCount, map->mapData);
 					routerCount++;
+
 				}
 			}
 		}
