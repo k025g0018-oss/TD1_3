@@ -14,6 +14,7 @@ struct GameScreen {
 	Vector2 size;
 };
 
+
 struct CommandScreen {
 	Vector2 position;
 	Vector2 size;
