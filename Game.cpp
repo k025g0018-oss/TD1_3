@@ -77,6 +77,13 @@ void Game::Initialize() {
 
 void Game::Update(char keys[256], char preKeys[256]) {
 
+	// Rキーでリセット
+	if (keys[DIK_R] && !preKeys[DIK_R]) {
+		player->status_.pos.x = 300.0f;
+		player->status_.pos.y = 704.0f;
+		isRunning = false; // 実行中なら編集モードに戻す
+	}
+
 	int mouseX, mouseY;
 	Novice::GetMousePosition(&mouseX, &mouseY);
 	bool isClick = Novice::IsTriggerMouse(0);
