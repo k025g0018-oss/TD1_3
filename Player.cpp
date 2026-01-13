@@ -252,26 +252,6 @@ bool Player::IsCliffAhead(int mapData[kMapHeight][kMapWidth]) {
 //マップチップの当たり判定関数
 #pragma region マップの当たり判定関数
 
-//void Player::isGrounded(int mapData[kMapHeight][kMapWidth]) {
-//	//足元にマップがあるかの確認
-//	// 左右の当たり判定と補正
-//	float leftX = status_.pos.x;
-//	float rightX = status_.pos.x + status_.width;
-//	float bottomY = status_.pos.y + status_.height;
-//
-//	int tileLeftX = (int)(leftX / kTileSize);
-//	int tileRightX = (int)((rightX - 0.1f) / kTileSize); // 0.1f引いて右端ギリギリを判定
-//	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
-//
-//	// 下方向（床）の判定
-//	if (status_.Velocity.y > 0) {
-//		if (mapData[tileBottomY][tileLeftX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
-//			status_.pos.y = (float)(tileBottomY * kTileSize) - status_.height;
-//			status_.Velocity.y = 0;
-//			status_.isJumop = false;
-//		}
-//	}
-//}
 
 // --- 接地判定 ---
 void Player::isGrounded(int mapData[kMapHeight][kMapWidth], int mapId) {
@@ -314,25 +294,6 @@ void Player::isGrounded(int mapData[kMapHeight][kMapWidth], int mapId) {
 	}
 }
 
-//右壁の当たり判定
-//void Player::isRightWall(int mapData[kMapHeight][kMapWidth]) {
-//	float rightX = status_.pos.x + status_.width;
-//	float topY = status_.pos.y;
-//	float bottomY = status_.pos.y + status_.height;
-//
-//	// 座標から右側にあるタイル番号を算出
-//	int tileRightX = (int)((rightX - 0.1f) / kTileSize);
-//	int tileTopY = (int)(topY / kTileSize);
-//	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
-//
-//	// 壁（0以外）に当たっていたら
-//	if (mapData[tileTopY][tileRightX] != 0 || mapData[tileBottomY][tileRightX] != 0) {
-//		// 【修正点】
-//		// tileRightX * kTileSize は「壁の左端」の座標です。
-//		// そこから「プレイヤーの横幅」を引いた位置が、正しい停止位置になります。
-//		status_.pos.x = (float)(tileRightX * kTileSize) - status_.width;
-//	}
-//}
 
 // --- 右壁判定 ---
 void Player::isRightWall(int mapData[kMapHeight][kMapWidth], int mapId) {
@@ -365,21 +326,7 @@ void Player::isRightWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	}
 }
 
-//左壁の当たり判定
-//void Player::isLeftWall(int mapData[kMapHeight][kMapWidth]) {
-//	float leftX = status_.pos.x;
-//	float topY = status_.pos.y;
-//	float bottomY = status_.pos.y + status_.height;
-//
-//	int tileLeftX = (int)(leftX / kTileSize);
-//	int tileTopY = (int)(topY / kTileSize);
-//	int tileBottomY = (int)((bottomY - 0.1f) / kTileSize);
-//
-//	if (mapData[tileTopY][tileLeftX] != 0 || mapData[tileBottomY][tileLeftX] != 0) {
-//		// 【修正点】左に押し出すのではなく、タイルの右側（+1）へ押し戻す
-//		status_.pos.x = (float)((tileLeftX + 1) * kTileSize);
-//	}
-//}
+
 
 // --- 左壁判定 ---
 void Player::isLeftWall(int mapData[kMapHeight][kMapWidth], int mapId) {
