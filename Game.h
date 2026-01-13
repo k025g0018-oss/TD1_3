@@ -19,6 +19,7 @@ struct CommandScreen {
 	Vector2 size;
 };
 
+
 // コマンドのボタン
 struct Button {
 	float x, y, w, h;
