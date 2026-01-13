@@ -28,7 +28,7 @@ public:
 		float Speed;
 
 		Vector2 scale;//大きさ
-		Vector2 dir;//プレイヤーの向き
+		float moveDir;//プレイヤーの向き
 
 		float height;
 		float width;
@@ -37,6 +37,7 @@ public:
 		float jumpPower;//ジャンプ力
 		bool isJumop;//ジャンプフラグ
 		float radius;
+
 
 		bool isMoveFree;//自由に動けるかのフラグ
 		bool isCommandMove;//コマンドで動かす範囲

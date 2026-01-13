@@ -64,12 +64,14 @@ void Game::Initialize() {
 	// ★パレットエリアにボタンを配置
 	float btnX = 1450;
 	float btnW = 400;
-	float btnH = 60;
+	float btnH = 50; // 少し高さを詰めたほうが入りやすいかも
 
-	btnRight = { btnX, 50,  btnW, btnH, ">> Move Right",    CommandType::MoveRight,      0x44AAFFFF }; // 青系
-	btnWallJump = { btnX, 130, btnW, btnH, "If Wall -> Jump",  CommandType::CheckWallJump,  (int)0xFFAA44FF }; // オレンジ系
-	btnCliffJump = { btnX, 210, btnW, btnH, "If Air -> Jump", CommandType::CheckCliffJump, (int)0xFFAA44FF }; // オレンジ系
-
+	// 左・右・壁・崖 の順に並べる例
+	btnLeft = { btnX, 50,  btnW, btnH, "<< Move Left",     CommandType::MoveLeft,     0x44AAFFFF };
+	btnRight = { btnX, 110, btnW, btnH, ">> Move Right",    CommandType::MoveRight,    0x44AAFFFF };
+	btnWallJump = { btnX, 170, btnW, btnH, "If Wall -> Jump",  CommandType::CheckWallJump, (int)0xFFAA44FF };
+	btnCliffJump = { btnX, 230, btnW, btnH, "If Air -> Jump",   CommandType::CheckCliffJump,(int)0xFFAA44FF };
+	
 	// スタート・リセットボタン
 	btnStart = { 1450, 300, 180, 80, "START >", (CommandType)-1, (int)0xFF4444FF };
 	btnReset = { 1670, 300, 180, 80, "STOP []", (CommandType)-1, 0x44FF44FF };
@@ -134,12 +136,18 @@ void Game::Update(char keys[256], char preKeys[256]) {
 			if (mouseX >= btnRight.x && mouseX <= btnRight.x + btnRight.w && mouseY >= btnRight.y && mouseY <= btnRight.y + btnRight.h) {
 				commandList.push_back(btnRight.cmdType);
 			}
+
+			if (mouseX >= btnLeft.x && mouseX <= btnLeft.x + btnLeft.w && mouseY >= btnLeft.y && mouseY <= btnLeft.y + btnLeft.h) {
+				commandList.push_back(btnLeft.cmdType);
+			}
+
 			if (mouseX >= btnWallJump.x && mouseX <= btnWallJump.x + btnWallJump.w && mouseY >= btnWallJump.y && mouseY <= btnWallJump.y + btnWallJump.h) {
 				commandList.push_back(btnWallJump.cmdType);
 			}
 			if (mouseX >= btnCliffJump.x && mouseX <= btnCliffJump.x + btnCliffJump.w && mouseY >= btnCliffJump.y && mouseY <= btnCliffJump.y + btnCliffJump.h) {
 				commandList.push_back(btnCliffJump.cmdType);
 			}
+
 
 			// 2. スタートボタン
 			if (mouseX >= btnStart.x && mouseX <= btnStart.x + btnStart.w && mouseY >= btnStart.y && mouseY <= btnStart.y + btnStart.h) {
@@ -220,6 +228,7 @@ void Game::Draw() {
 		};
 
 	DrawBtn(btnRight);
+	DrawBtn(btnLeft);
 	DrawBtn(btnWallJump);
 	DrawBtn(btnCliffJump);
 	DrawBtn(btnStart);
@@ -244,6 +253,10 @@ void Game::Draw() {
 		case CommandType::MoveRight:
 			color = 0x44AAFFFF; // 青
 			text = "Move Right";
+			break;
+		case CommandType::MoveLeft:
+			color = 0x44AAFFFF; // 青
+			text = "Move Left";
 			break;
 		case CommandType::CheckWallJump:
 			color = 0xFFAA44FF; // オレンジ
