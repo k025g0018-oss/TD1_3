@@ -81,6 +81,7 @@ private:
 
 	// ボタン類
 	Button btnRight;
+	Button btnLeft;
 	Button btnWallJump;
 	Button btnCliffJump;
 	Button btnStart;
