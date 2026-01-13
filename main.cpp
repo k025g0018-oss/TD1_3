@@ -44,6 +44,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// スクリーンモード
 	bool screenMode = false;
+
   
 	// ゲームシーンマネージャーを生成
 	SceneManager* sceneManager = new SceneManager();
