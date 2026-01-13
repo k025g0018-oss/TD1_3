@@ -55,7 +55,7 @@ public:
 
 	//ルーターの通信範囲内でさらにその中でも自由に行動できるのかの関数
 	// 引数でルーターの配列を受け取るようにする
-	void CheckRouter(Router* router[], int count);
+	bool CheckRouter(Router* router[], int count);
 
 private:
 
