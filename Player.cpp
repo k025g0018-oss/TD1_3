@@ -49,7 +49,7 @@ void Player::UpdatePlayer(char keys[256], char preKeys[256], int  mapData[kMapHe
 
 // コマンドで動かせるプレイヤー
 void Player::UpdateByCommands(const std::vector<CommandType>& commands, int mapData[kMapHeight][kMapWidth]) {
-	if (!status_.isActive) return;
+
 
 	// まだ実行すべきコマンドが残っているか？
 	if (cmdIndex < commands.size()) {
@@ -435,9 +435,12 @@ void Player::isTopWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 #pragma endregion
 
 
-void Player::CheckRouter(Router* router[], int count) {
+bool Player::CheckRouter(Router* router[], int count) {
 	// ★1. まずは「圏外」のデフォルト状態にする
 	// 全てのルーターから外れているときは、動けないように設定
+
+	bool isArrived = false;
+
 	status_.isMoveFree = false;
 	status_.isCommandMove = false;
 
@@ -462,15 +465,20 @@ void Player::CheckRouter(Router* router[], int count) {
 		if (distSq <= r * r) {
 			status_.isMoveFree = true;
 			status_.isCommandMove = true;
-			return; // 最高の状態なので、これ以上他のルーターは見なくて良い
+
+			// ここで「到着フラグ」を立てる
+			isArrived = true;
+
+			break;
 		}
-		// ★4. 判定（外側の円：内側には入っていないが外側には入っている）
+		// ★外側の円（まだ到着してないけど、電波はある）
 		else if (distSq <= br * br) {
 			status_.isMoveFree = false;
 			status_.isCommandMove = true;
-			// 他のルーターでもっと良い条件（内側）があるかもしれないので、
-			// ここでは return せずにループを続けるか、
-			// 「最低でもコマンド移動はできる」というフラグだけ立てておく
+			// 到着はしていないので isArrived は false のまま
 		}
 	}
+
+	// ★結果を返す
+	return isArrived;
 }

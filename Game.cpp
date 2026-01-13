@@ -92,8 +92,14 @@ void Game::Update(char keys[256], char preKeys[256]) {
 	// ==========================================
 	if (isRunning) {
 		// --- 実行モード ---
-		player->UpdateByCommands(commandList, map->mapData);
 		player->CheckRouter(router, 250);
+		bool isArrived = player->CheckRouter(router,250);
+
+		if (isArrived) {
+			isRunning = false; 
+		} else {
+			player->UpdateByCommands(commandList, map->mapData);
+		}
 
 		// ストップボタン判定
 		if (isClick) {
@@ -103,11 +109,13 @@ void Game::Update(char keys[256], char preKeys[256]) {
 				player->InitPlayer();
 			}
 		}
+	
 	}
 	else {
 		// --- 編集モード ---
 		player->UpdatePlayer(keys, preKeys, map->mapData);
-		player->CheckRouter(router, 250);
+		//player->CheckRouter(router, 250);
+		bool isInsideRouter = player->CheckRouter(router, 250);
 
 		if (isClick) {
 			// 1. パレットのボタンを押してコマンドを追加
@@ -123,10 +131,16 @@ void Game::Update(char keys[256], char preKeys[256]) {
 
 			// 2. スタートボタン
 			if (mouseX >= btnStart.x && mouseX <= btnStart.x + btnStart.w && mouseY >= btnStart.y && mouseY <= btnStart.y + btnStart.h) {
-				isRunning = true;
-				player->InitPlayer();
-			}
 
+				
+				if (!isInsideRouter) {
+					isRunning = true;
+					player->InitPlayer();
+				} else {
+					// (オプション)「ここではスタートできません」みたいなログを出してもいいかも
+					Novice::ScreenPrintf(0, 0, "Router Area! Can't Start!");
+				}
+			}
 			// 下の方に表示されているブロックほど、リストの後ろの方にある
 			float blockY = programArea.y + 50;
 			for (int i = 0; i < commandList.size(); i++) {
