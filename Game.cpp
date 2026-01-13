@@ -82,6 +82,7 @@ void Game::Update(char keys[256], char preKeys[256]) {
 		player->status_.pos.x = 300.0f;
 		player->status_.pos.y = 704.0f;
 		isRunning = false; // 実行中なら編集モードに戻す
+		cantStartCount = 0;
 	}
 
 	int mouseX, mouseY;
@@ -92,6 +93,10 @@ void Game::Update(char keys[256], char preKeys[256]) {
 		if (router[i] != nullptr) {
 			router[i]->UpdateRouter(mapData); // Routerクラスにある描画関数を呼ぶ
 		}
+	}
+
+	if (cantStartCount > 0) {
+		cantStartCount--;
 	}
 
 	// ==========================================
@@ -140,12 +145,14 @@ void Game::Update(char keys[256], char preKeys[256]) {
 			if (mouseX >= btnStart.x && mouseX <= btnStart.x + btnStart.w && mouseY >= btnStart.y && mouseY <= btnStart.y + btnStart.h) {
 
 				
+
 				if (!isInsideRouter) {
 					isRunning = true;
 					player->InitPlayer();
+					cantStartCount = 0;
 				} else {
 					// (オプション)「ここではスタートできません」みたいなログを出してもいいかも
-					Novice::ScreenPrintf(0, 0, "Router Area! Can't Start!");
+					cantStartCount = 60;
 				}
 			}
 			// 下の方に表示されているブロックほど、リストの後ろの方にある
@@ -200,6 +207,11 @@ void Game::Draw() {
 
 	// プレイヤー描画
 	player->DrawPlayer(offset);
+
+	// 警告メッセージの表示
+	if (cantStartCount > 0) {
+		Novice::ScreenPrintf(800, 400, "Router Area! Can't Start!");
+	}
 	
 	// --- UIボタン描画 ---
 	auto DrawBtn = [](Button& b) {
