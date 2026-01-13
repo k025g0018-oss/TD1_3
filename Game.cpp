@@ -68,8 +68,8 @@ void Game::Initialize() {
 	float btnH = 60;
 
 	btnRight = { btnX, 50,  btnW, btnH, ">> Move Right",    CommandType::MoveRight,      0x44AAFFFF }; // 青系
-	btnWallJump = { btnX, 130, btnW, btnH, "?? Wall -> Jump",  CommandType::CheckWallJump,  (int)0xFFAA44FF }; // オレンジ系
-	btnCliffJump = { btnX, 210, btnW, btnH, "?? Cliff -> Jump", CommandType::CheckCliffJump, (int)0xFFAA44FF }; // オレンジ系
+	btnWallJump = { btnX, 130, btnW, btnH, "If Wall -> Jump",  CommandType::CheckWallJump,  (int)0xFFAA44FF }; // オレンジ系
+	btnCliffJump = { btnX, 210, btnW, btnH, "If Air -> Jump", CommandType::CheckCliffJump, (int)0xFFAA44FF }; // オレンジ系
 
 	// スタート・リセットボタン
 	btnStart = { 1450, 300, 180, 80, "START >", (CommandType)-1, (int)0xFF4444FF };
@@ -219,7 +219,7 @@ void Game::Draw() {
 			break;
 		case CommandType::CheckCliffJump:
 			color = 0xFFAA44FF; // オレンジ
-			text = "If Cliff -> Jump";
+			text = "If Air -> Jump";
 			break;
 		}
 		// もし今実行しているコマンドなら、色を「赤」に変えて目立たせる！
@@ -261,5 +261,6 @@ void Game::Draw() {
 	Novice::ScreenPrintf(0, 0, "Mouse: %d, %d", mx, my);
 	Novice::ScreenPrintf(0, 20, "BtnRight X: %d", (int)btnRight.x);
 	Novice::ScreenPrintf(0, 80, "player Pos X: %.2f", player->status_.pos.x);
+	Novice::ScreenPrintf(0, 110, "player Pos Y: %.2f", player->status_.pos.y);
 
 }
