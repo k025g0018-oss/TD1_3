@@ -11,9 +11,9 @@ Game::Game() {
 	player = new Player();
 	map = new Map();
 	scrollCamera = new ScrollCamera(); // スクロールちゃん
-	for (int i = 0; i < 250; i++) {
+	/*for (int i = 0; i < 250; i++) {
 		router[i] = new Router(i, map->mapData);
-	}
+	}*/
 	Initialize();
 }
 
@@ -129,7 +129,7 @@ void Game::Update(char keys[256], char preKeys[256]) {
 	else {
 		// --- 編集モード ---
 		player->UpdatePlayer(keys, preKeys, map->mapData);
-		//player->CheckRouter(router, 250);
+		player->CheckRouter(router, 250);
 		bool isInsideRouter = player->CheckRouter(router, 250);
 
 		if (isClick) {
