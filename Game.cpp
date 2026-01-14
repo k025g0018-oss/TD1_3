@@ -207,7 +207,7 @@ void Game::Draw() {
 	// ルーター描画
 	for (int i = 0; i < routerCount; i++) {
 		if (router[i] != nullptr) {
-			router[i]->DrawRouter(offset); // Routerクラスにある描画関数を呼ぶ
+			router[i]->DrawRouter(offset); // Routerクラスにある描画関数を呼ぶWTF
 		}
 	}
 
