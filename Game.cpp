@@ -78,6 +78,22 @@ void Game::Initialize() {
 	btnReset = { 1670, 300, 180, 80, "STOP []", (CommandType)-1, 0x44FF44FF };
 }
 
+// プレイヤーとボタンの当たり判定を行う関数を追加
+bool IsPlayerHit(Player* player, const ButtonA& button) {
+	// プレイヤーの位置とボタンの位置を比較して当たり判定を行う
+	float playerLeft = player->status_.pos.x;
+	float playerRight = player->status_.pos.x + player->status_.width;
+	float playerTop = player->status_.pos.y;
+	float playerBottom = player->status_.pos.y + player->status_.height;
+
+	float buttonLeft = button.pos.x;
+	float buttonRight = button.pos.x + 32; // ボタンの幅を仮に32とする
+	float buttonTop = button.pos.y;
+	float buttonBottom = button.pos.y + 32; // ボタンの高さを仮に32とする
+
+	return !(playerRight < buttonLeft || playerLeft > buttonRight || playerBottom < buttonTop || playerTop > buttonBottom);
+};
+
 void Game::Update(char keys[256], char preKeys[256]) {
 
 	// Rキーでリセット
@@ -86,6 +102,26 @@ void Game::Update(char keys[256], char preKeys[256]) {
 		player->status_.pos.y = 704.0f;
 		isRunning = false; // 実行中なら編集モードに戻す
 		cantStartCount = 0;
+	}
+
+	// 例えば Map::Update() や GameScene::Update() などで
+
+// 全部のボタンをチェック
+	for (auto& btn : map->buttons) {
+	
+	
+		// プレイヤーがボタンを踏んだら
+		if (IsPlayerHit(player, btn)) {
+			btn.isPressed = true;
+
+			// ★ここで連動！
+			// 「このボタンと同じlinkIdを持つドア」をすべて探して開ける
+			for (auto& door : map->doors) {
+				if (door.linkId == btn.linkId) {
+					door.isOpen = true; // ドアオープン！
+				}
+			}
+		}
 	}
 
 	int mouseX, mouseY;

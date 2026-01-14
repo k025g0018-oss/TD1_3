@@ -162,18 +162,20 @@ void Player::MovePlayer(char keys[256], char preKeys[256],
 		if (keys[DIK_D]) {
 
 			status_.pos.x += status_.Speed;
+			isRightWall(mapData, BLOCK);
+			isRightWall(mapData, HALF_FLOOR);
+
 		}
 		if (keys[DIK_A]) {
 
 			status_.pos.x -= status_.Speed;
+			isLeftWall(mapData, BLOCK);
+			isLeftWall(mapData, HALF_FLOOR);
 		}
 	}
-	isRightWall(mapData, BLOCK);
-	isRightWall(mapData, HALF_FLOOR);//ハーフブロック判定
+	
 
-	isLeftWall(mapData, BLOCK);
-	isLeftWall(mapData, HALF_FLOOR);
-	//いまは左から当たるときは同じ処理なので特に変化なし
+	
 
 	Gravity();
 
@@ -214,7 +216,8 @@ bool Player::IsWallAhead(int mapData[kMapHeight][kMapWidth]) {
 
 	int checkX;
 
-	// ★右を向いているか、左を向いているかでチェック位置を変える
+	// ★右を向いているか、左を向いているか
+	// でチェック位置を変える
 	if (status_.moveDir > 0) {
 		// 右方向：自分の右端 + 5px
 		checkX = (int)(status_.pos.x + status_.width + 5.0f) / kTileSize;
@@ -299,8 +302,8 @@ void Player::isGrounded(int mapData[kMapHeight][kMapWidth], int mapId) {
 void Player::isRightWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	float rightX = status_.pos.x + status_.width;
 	int tileRightX = (int)((rightX - 0.05f) / kTileSize); // 判定精度を微調整
-	int tileTopY = (int)(status_.pos.y / kTileSize);
-	int tileBottomY = (int)((status_.pos.y + status_.height - 0.1f) / kTileSize);
+	int tileTopY = (int)((status_.pos.y+2.0f) / kTileSize);
+	int tileBottomY = (int)((status_.pos.y + status_.height - 2.0f) / kTileSize);
 
 	if (tileRightX < 0 || tileRightX >= kMapWidth) return;
 
@@ -332,8 +335,8 @@ void Player::isRightWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 void Player::isLeftWall(int mapData[kMapHeight][kMapWidth], int mapId) {
 	float leftX = status_.pos.x;
 	int tileLeftX = (int)(leftX / kTileSize);
-	int tileTopY = (int)(status_.pos.y / kTileSize);
-	int tileBottomY = (int)((status_.pos.y + status_.height - 0.1f) / kTileSize);
+	int tileTopY = (int)((status_.pos.y+2.0f) / kTileSize);
+	int tileBottomY = (int)((status_.pos.y + status_.height - 2.0f) / kTileSize);
 
 	if (tileLeftX < 0 || tileLeftX >= kMapWidth) return;
 

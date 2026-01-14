@@ -7,6 +7,18 @@
 // 一応最大ブロック種類の定義
 const int kMaxBlocksType = 100;
 
+struct Door {
+	Vector2 pos;  // 座標
+	int linkId;   // LDtkで設定したIntegerの値
+	bool isOpen;  // 開いているか
+};
+
+struct ButtonA {
+	Vector2 pos;  // 座標
+	int linkId;   // LDtkで設定したIntegerの値
+	bool isPressed; // 押されたか
+};
+
 class Map {
 public:
 	// マップデータ
@@ -17,6 +29,9 @@ public:
 
 	// コンストラクタ
 	Map();
+
+	std::vector<Door> doors;
+	std::vector<ButtonA> buttons;
 
 	// 初期化
 	void Initialize();
