@@ -13,6 +13,7 @@ public:
 		float radius;//自由に動けるゾーン
 		float bigRadius;//プレイヤーをコマンドで動かせるゾーン
 	
+
 	}router_;
 	int id_;
 
